@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{51058796-D0A4-43DD-9FF0-584F51388D64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeAssistant.Core", "src\LifeAssistant.Core\LifeAssistant.Core.csproj", "{C62CC661-80C3-44F3-8972-F4CA7B72BFD4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7F19808C-3AAB-48C3-9886-0D1D23E6A8C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeAssistant.Core.Tests", "tests\LifeAssistant.Core.Tests\LifeAssistant.Core.Tests.csproj", "{68491376-0088-46E8-936A-D9ADB6644AAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeAssistant.Web", "src\LifeAssistant.Web\LifeAssistant.Web.csproj", "{348B2776-7168-404E-8963-EC7EB8A75961}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeAssistant.Web.Tests", "tests\LifeAssistant.Web.Tests\LifeAssistant.Web.Tests.csproj", "{F1403B05-205C-45D6-9327-46F548B8BA5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C62CC661-80C3-44F3-8972-F4CA7B72BFD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C62CC661-80C3-44F3-8972-F4CA7B72BFD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C62CC661-80C3-44F3-8972-F4CA7B72BFD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C62CC661-80C3-44F3-8972-F4CA7B72BFD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68491376-0088-46E8-936A-D9ADB6644AAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68491376-0088-46E8-936A-D9ADB6644AAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68491376-0088-46E8-936A-D9ADB6644AAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68491376-0088-46E8-936A-D9ADB6644AAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{348B2776-7168-404E-8963-EC7EB8A75961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{348B2776-7168-404E-8963-EC7EB8A75961}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{348B2776-7168-404E-8963-EC7EB8A75961}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{348B2776-7168-404E-8963-EC7EB8A75961}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1403B05-205C-45D6-9327-46F548B8BA5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1403B05-205C-45D6-9327-46F548B8BA5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1403B05-205C-45D6-9327-46F548B8BA5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1403B05-205C-45D6-9327-46F548B8BA5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C62CC661-80C3-44F3-8972-F4CA7B72BFD4} = {51058796-D0A4-43DD-9FF0-584F51388D64}
+		{68491376-0088-46E8-936A-D9ADB6644AAA} = {7F19808C-3AAB-48C3-9886-0D1D23E6A8C7}
+		{348B2776-7168-404E-8963-EC7EB8A75961} = {51058796-D0A4-43DD-9FF0-584F51388D64}
+		{F1403B05-205C-45D6-9327-46F548B8BA5D} = {7F19808C-3AAB-48C3-9886-0D1D23E6A8C7}
+	EndGlobalSection
+EndGlobal

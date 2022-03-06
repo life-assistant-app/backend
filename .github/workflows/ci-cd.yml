@@ -1,0 +1,45 @@
+﻿on:
+  push:
+    branches:
+      - "main"
+        
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lifeassistant
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Run Tests
+        run: dotnet test
+        env:
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_HOST: postgres
+          DB_PORT: 5432
+          DB_NAME: lifeassistant
+          JWT_SECRET: mylongandsecretstringtosignjwttokens
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Check out repository code
+          uses: actions/checkout@v2
+        - name: Build the Docker image
+          run: docker build -t ombrelin/life-assistant:latest src/LifeAssistant.Web --file Dockerfile
+        - name: Docker login
+          run: echo '${{ secrets.DOCKER_TOKEN }}' | docker login --username ombrelin --password-stdin
+        - name: Publish to Docker hub
+          run: docker push ombrelin/life-assistant:latest
