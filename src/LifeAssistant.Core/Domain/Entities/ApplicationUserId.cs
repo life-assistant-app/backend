@@ -2,7 +2,7 @@
 
 namespace LifeAssistant.Core.Domain.Entities;
 
-[StronglyTypedId(converters: StronglyTypedIdConverter.SystemTextJson)]
+[StronglyTypedId(converters: StronglyTypedIdConverter.SystemTextJson | StronglyTypedIdConverter.EfCoreValueConverter)]
 public partial struct ApplicationUserId
 {
     
