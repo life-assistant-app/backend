@@ -2,10 +2,8 @@
 
 namespace LifeAssistant.Core.Domain.Entities;
 
-public class ApplicationUser
+public class ApplicationUser : BaseEntity
 {
-    public ApplicationUserId Id { get; }
-
     private string username;
 
     public string Username
@@ -25,19 +23,17 @@ public class ApplicationUser
     public ApplicationUserRole Role { get; }
     public bool Validated { get; set; }
 
-    public ApplicationUser(ApplicationUserId id, string username, string password, ApplicationUserRole role,
-        bool validated)
+    public ApplicationUser(Guid id, string username, string password, ApplicationUserRole role,
+        bool validated) : base(id)
     {
-        Id = id;
         Username = username;
         Password = password;
         Role = role;
         Validated = validated;
     }
 
-    public ApplicationUser(string username, string password, ApplicationUserRole role)
+    public ApplicationUser(string username, string password, ApplicationUserRole role) : base(Guid.NewGuid())
     {
-        Id = ApplicationUserId.New();
         Validated = false;
         Username = username;
         Password = password;

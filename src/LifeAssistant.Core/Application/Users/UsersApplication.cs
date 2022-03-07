@@ -10,12 +10,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace LifeAssistant.Core.Application.Users;
 
-public class UsersApplications
+public class UsersApplication
 {
     private readonly IApplicationUserRepository applicationUserRepository;
     private readonly string jwtSecret;
 
-    public UsersApplications(IApplicationUserRepository applicationUserRepository, string jwtSecret)
+    public UsersApplication(IApplicationUserRepository applicationUserRepository, string jwtSecret)
     {
         this.applicationUserRepository = applicationUserRepository;
         this.jwtSecret = jwtSecret;
@@ -37,6 +37,7 @@ public class UsersApplications
         );
         
         await this.applicationUserRepository.Insert(applicationUser);
+        await this.applicationUserRepository.Save();
 
         return new RegisterResponse(
             applicationUser.Id,

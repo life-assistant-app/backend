@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
-    <PackageReference Include="StronglyTypedId" Version="1.0.0-beta06" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
   </ItemGroup>
   <Target Name="PostClean" AfterTargets="Clean">

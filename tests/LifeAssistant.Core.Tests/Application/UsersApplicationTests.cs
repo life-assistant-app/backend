@@ -22,7 +22,7 @@ public class UsersApplicationTests
     {
         // Given
         var fakeRepository = new FakeApplicationUserRepository();
-        var application = new UsersApplications(fakeRepository, null);
+        var application = new UsersApplication(fakeRepository, null);
         var username = "John Doe";
         var password = "e89fre4f!9er8@";
         var role = "LifeAssistant";
@@ -58,7 +58,7 @@ public class UsersApplicationTests
             ValidateAudience = false
         };
 
-        var application = new UsersApplications(fakeRepository, jwtSecret);
+        var application = new UsersApplication(fakeRepository, jwtSecret);
         var username = "John Doe";
         var password = "e89fre4f!9er8@";
         ApplicationUserRole role = ApplicationUserRole.AgencyEmployee;

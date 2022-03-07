@@ -2,4 +2,4 @@
 
 namespace LifeAssistant.Core.Application.Users.Contracts;
 
-public record RegisterResponse(ApplicationUserId Id, string Username, string Role, bool Validated);
+public record RegisterResponse(Guid Id, string Username, string Role, bool Validated);

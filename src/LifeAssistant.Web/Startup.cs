@@ -35,7 +35,7 @@ public class Startup
 
         services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
         services.AddScoped((servicesProviders) =>
-            new UsersApplications(servicesProviders.GetService<IApplicationUserRepository>(),
+            new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
                 Configuration["JWT_SECRET"]));
 
         services.AddControllers();
@@ -52,7 +52,7 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
+        app.UseRouting();
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());

@@ -6,6 +6,7 @@ using LifeAssistant.Core.Application.Users.Contracts;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Web.Tests.Integration;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace LifeAssistant.Web.Tests;
@@ -32,12 +33,17 @@ public class AuthenticationIntegrationTests : IntegrationTests
         
         // Then
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        RegisterResponse payload = await response.Content.ReadFromJsonAsync<RegisterResponse>();
-
-        payload.Id.Should().NotBeNull();
+        RegisterResponse? payload = await response.Content.ReadFromJsonAsync<RegisterResponse>();
+        
+        payload.Id.Should().NotBeEmpty();
         payload.Role.Should().Be(ApplicationUserRole.LifeAssistant.ToString());
         payload.Validated.Should().Be(false);
         payload.Username.Should().Be("John Doe");
+
+        ApplicationUser userInDb = await this.context.Users.FirstAsync(u => u.Id == payload.Id);
+        userInDb.Role.Should().Be(ApplicationUserRole.LifeAssistant);
+        userInDb.Validated.Should().Be(false);
+        userInDb.Username.Should().Be("John Doe");
     }
 
 

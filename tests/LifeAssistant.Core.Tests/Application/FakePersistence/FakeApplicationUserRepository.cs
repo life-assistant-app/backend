@@ -5,7 +5,7 @@ using LifeAssistant.Core.Persistence;
 
 namespace LifeAssistant.Core.Tests.Application.FakePersistence;
 
-public class FakeApplicationUserRepository : FakeRepository<ApplicationUser, ApplicationUserId>, IApplicationUserRepository
+public class FakeApplicationUserRepository : FakeRepository<ApplicationUser>, IApplicationUserRepository
 {
     public Task<ApplicationUser> FindByUsername(string username)
     {

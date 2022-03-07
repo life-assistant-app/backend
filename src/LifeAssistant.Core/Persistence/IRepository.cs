@@ -3,7 +3,8 @@ using LifeAssistant.Core.Domain.Entities;
 
 namespace LifeAssistant.Core.Persistence;
 
-public interface IRepository<TEntity,TKey>
+public interface IRepository<TEntity>
 {
-    Task Insert(ApplicationUser applicationUser);
+    Task Insert(TEntity applicationUser);
+    Task Save();
 }

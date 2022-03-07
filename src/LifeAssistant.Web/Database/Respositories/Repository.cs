@@ -4,7 +4,7 @@ using LifeAssistant.Core.Persistence;
 
 namespace LifeAssistant.Web.Database.Respositories;
 
-public class Repository<TEntity,TKey>: IRepository<TEntity,TKey>
+public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
 {
     private readonly ApplicationDbContext context;
 
@@ -13,8 +13,13 @@ public class Repository<TEntity,TKey>: IRepository<TEntity,TKey>
         this.context = context;
     }
 
-    public Task Insert(ApplicationUser applicationUser)
+    public async Task Insert(TEntity entity)
     {
-        throw new System.NotImplementedException();
+        await this.context.Set<TEntity>().AddAsync(entity);
+    }
+
+    public async Task Save()
+    {
+        await this.context.SaveChangesAsync();
     }
 }
