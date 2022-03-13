@@ -15,12 +15,29 @@ public class AuthController : ControllerBase
         this.application = application;
     }
 
+    /// <summary>
+    /// Register a new user. The new user will be disable until activation by an agency employee
+    /// </summary>
+    /// <param name="request">
+    ///     - Username : username of the new user
+    ///     - Password : password of the new user
+    ///     - Role : role of the new user
+    /// </param>
+    /// <returns>New user data</returns>
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterRequest request)
     {
         return Created("",await this.application.Register(request));
     }
 
+    /// <summary>
+    /// Login an user
+    /// </summary>
+    /// <param name="request">
+    ///     - Username : username of the new user
+    ///     - Password : password of the new user
+    /// </param>
+    /// <returns>JWT token for the user</returns>
     [HttpPost("login")]
     public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
     {
