@@ -13,11 +13,7 @@ public class RepositoryTests : DatabaseTest
     public async Task Insert_InsertsRecordInDb()
     {
         // Given
-        ApplicationUser user = new ApplicationUser(
-            "John Doe",
-            "ized5è54é-@!é", 
-            ApplicationUserRole.AgencyEmployee
-        );
+        ApplicationUser user = this.dataFactory.CreateApplicationUser();
 
         var repository = new ApplicationUserRepository(this.context);
 
@@ -34,5 +30,6 @@ public class RepositoryTests : DatabaseTest
         userInDb.Role.Should().Be(user.Role);
         userInDb.Validated.Should().Be(user.Validated);
     }
-    
+
+
 }

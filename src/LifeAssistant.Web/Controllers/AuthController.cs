@@ -18,6 +18,12 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterRequest request)
     {
-        return await this.application.Register(request);
+        return Created("",await this.application.Register(request));
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
+    {
+        return Ok(await this.application.Login(request));
     }
 }

@@ -1,20 +1,56 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using LifeAssistant.Web.Database;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Xunit;
 
 namespace LifeAssistant.Web.Tests.Integration;
 
-public class IntegrationTests : IClassFixture<WebApplicationFactory<Startup>>
+public class IntegrationTests : WebTests,IClassFixture<WebApplicationFactory<Startup>>, IAsyncLifetime
 {
     protected readonly HttpClient client;
-    protected readonly ApplicationDbContext context;
+    protected readonly ApplicationDbContext givenDbContext;
+    protected readonly ApplicationDbContext assertDbContext;
 
     public IntegrationTests(WebApplicationFactory<Startup> factory)
     {
         this.client = factory.CreateClient();
-        context = factory.Services.GetService<ApplicationDbContext>() ?? throw new InvalidOperationException("Could not get DbContext from DI");
+        IConfiguration configuration = factory.Services.GetService<IConfiguration>();
+
+        givenDbContext = new ApplicationDbContext(GetOptionsForOtherDbContext(configuration));
+        assertDbContext = new ApplicationDbContext(GetOptionsForOtherDbContext(configuration));
+    }
+    
+    public DbContextOptions GetOptionsForOtherDbContext(IConfiguration configuration)
+    {
+        var builder = new NpgsqlConnectionStringBuilder
+        {
+            Host = configuration["DB_HOST"],
+            Port = int.Parse(configuration["DB_PORT"]),
+            Username = configuration["DB_USERNAME"],
+            Password = configuration["DB_PASSWORD"],
+            Database = configuration["DB_NAME"]
+        };
+        var options = new DbContextOptionsBuilder()
+            .UseNpgsql(builder.ToString())
+            .Options;
+        return options;
+    }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
+    {
+        this.assertDbContext.RemoveRange(this.assertDbContext.Users);
+        await this.assertDbContext.SaveChangesAsync();
+
+        Task disposeAssertContext = this.assertDbContext.DisposeAsync().AsTask();
+        Task disposeGivenContext = this.givenDbContext.DisposeAsync().AsTask();
+        await Task.WhenAll(new[] {disposeAssertContext, disposeGivenContext});
     }
 }

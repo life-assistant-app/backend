@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace LifeAssistant.Web.Database.Respositories;
 
@@ -15,6 +16,8 @@ public class ApplicationUserRepository: Repository<ApplicationUser>, IApplicatio
     
     public Task<ApplicationUser> FindByUsername(string username)
     {
-        throw new System.NotImplementedException();
+        return this.context
+            .Users
+            .FirstAsync(user => user.Username == username);
     }
 }

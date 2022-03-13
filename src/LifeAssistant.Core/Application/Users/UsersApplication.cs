@@ -80,6 +80,7 @@ public class UsersApplication
     
     private static void EnsureUserFoundAndPasswordMatch(string password, ApplicationUser user)
     {
+        ArgumentNullException.ThrowIfNull(user);
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
         {
             throw new ArgumentException();

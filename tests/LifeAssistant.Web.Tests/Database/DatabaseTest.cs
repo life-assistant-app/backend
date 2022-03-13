@@ -7,9 +7,10 @@ using Xunit;
 
 namespace LifeAssistant.Web.Tests.Database;
 
-public class DatabaseTest : IAsyncLifetime
+public class DatabaseTest : WebTests,IAsyncLifetime
 {
     protected ApplicationDbContext context;
+    protected DataFactory dataFactory = new DataFactory();
 
     public virtual async Task InitializeAsync()
     {
@@ -36,7 +37,8 @@ public class DatabaseTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await this.context.Database.EnsureDeletedAsync();
-        await context.DisposeAsync();
+        this.context.RemoveRange(this.context.Users);
+        await this.context.SaveChangesAsync();
+        await this.context.DisposeAsync();
     }
 }

@@ -6,6 +6,7 @@
       &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Application.UsersApplicationTests.Register_Nominal_InsertsUnvalidatedUser&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::F1403B05-205C-45D6-9327-46F548B8BA5D::net6.0::LifeAssistant.Web.Tests.AuthenticationIntegrationTests.Register_Norminal_InsertsNewUserInDb&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::F1403B05-205C-45D6-9327-46F548B8BA5D::net6.0::LifeAssistant.Web.Tests.Database.RepositoryTests.Insert_InsertsRecordInDb&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::F1403B05-205C-45D6-9327-46F548B8BA5D::net6.0::LifeAssistant.Web.Tests.Database.ApplicationUserRepositoryTest.FindByUsername_WithExistingUserName_InsertsRecordInDb&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;ProjectFile&gt;68491376-0088-46E8-936A-D9ADB6644AAA/d:Application/f:UsersApplicationTests.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Database/f:RepositoryTests.cs&lt;/ProjectFile&gt;&#xD;
@@ -16,4 +17,5 @@
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FNAME/@EntryIndexedValue">lifeassistanttest</s:String>
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FPASSWORD/@EntryIndexedValue">mysecretpassword</s:String>
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FPORT/@EntryIndexedValue">5432</s:String>
-	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FUSERNAME/@EntryIndexedValue">postgres</s:String></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FUSERNAME/@EntryIndexedValue">postgres</s:String>
+	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=JWT_005FSECRET/@EntryIndexedValue">mylongstringtosignjwttokens</s:String></wpf:ResourceDictionary>
