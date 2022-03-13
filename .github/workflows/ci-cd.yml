@@ -4,7 +4,7 @@
       - "main"
         
 jobs:
-  integration-and-deployment:
+  integration:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -32,6 +32,10 @@ jobs:
           DB_PORT: 5432
           DB_NAME: lifeassistant
           JWT_SECRET: mylongandsecretstringtosignjwttokens
+  deployment:
+      runs-on: ubuntu-latest
+      needs: integration
+      steps:
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: Build the Docker image
