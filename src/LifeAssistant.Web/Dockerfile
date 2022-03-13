@@ -4,15 +4,12 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-COPY ["src/LifeAssistant.Web/LifeAssistant.Web.csproj", "LifeAssistant.Web/"]
-WORKDIR "/src/LifeAssistant.Web"
-RUN dotnet restore "src/LifeAssistant.Web/LifeAssistant.Web.csproj"
+WORKDIR /app
 COPY . .
-WORKDIR "/src/LifeAssistant.Web"
-RUN dotnet build "LifeAssistant.Web.csproj" -c Release -o /app/build
+RUN dotnet build "src/LifeAssistant.Web/LifeAssistant.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "LifeAssistant.Web.csproj" -c Release -o /app/publish
+RUN dotnet publish "src/LifeAssistant.Web/LifeAssistant.Web.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
