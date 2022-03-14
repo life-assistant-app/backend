@@ -7,7 +7,12 @@ public class Appointment : BaseEntity
     private IAppointmentState state;
     private ApplicationUser lifeAssistant;
     private DateTime dateTime;
-
+    
+    /// Reflexion to simplify state :
+    /// Allow setting the state of the appointment, and not using Accept and Pickup methods (to have only on application method to update state)
+    /// The state can be set but the setter check if the current state accepts the incoming state (have a method on the state interface to get whether the state supports the upcoming state as next state)
+    /// hence, in the application method (need juste one) factory construct the state passed as string to the application method
+    /// and you can safely set it to the appointment
     public string State
     {
         get => state.Name;
