@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\LifeAssistant.Web\LifeAssistant.Web.csproj" />
+      <ProjectReference Include="..\LifeAssistant.Core.Tests\LifeAssistant.Core.Tests.csproj" />
     </ItemGroup>
     <Target Name="PostClean" AfterTargets="Clean">
         <RemoveDir Directories="$(BaseIntermediateOutputPath)" /><!-- obj -->

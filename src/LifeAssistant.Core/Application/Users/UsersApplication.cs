@@ -1,8 +1,6 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using LifeAssistant.Core.Application.Users.Contracts;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Persistence;
@@ -20,14 +18,7 @@ public class UsersApplication
         this.applicationUserRepository = applicationUserRepository;
         this.jwtSecret = jwtSecret;
     }
-
-    /// <summary>
-    /// Registers the user as an unvalidated used
-    /// </summary>
-    /// <param name="username">Desired username of the user</param>
-    /// <param name="password">Desired password of the user</param>
-    /// <param name="role">Desired role of the user</param>
-    /// <returns>The resulting user</returns>
+    
     public async Task<RegisterResponse> Register(RegisterRequest request)
     {
         var applicationUser = new ApplicationUser(
@@ -51,6 +42,11 @@ public class UsersApplication
     {
         ApplicationUser applicationUser = await applicationUserRepository.FindByUsername(request.Username);
         EnsureUserFoundAndPasswordMatch(request.Password, applicationUser);
+
+        if (!applicationUser.Validated)
+        {
+            throw new InvalidOperationException("User is not validated");
+        }
         
         var tokenHandler = new JwtSecurityTokenHandler();
 

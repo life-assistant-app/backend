@@ -7,6 +7,12 @@
       &lt;TestId&gt;xUnit::F1403B05-205C-45D6-9327-46F548B8BA5D::net6.0::LifeAssistant.Web.Tests.AuthenticationIntegrationTests.Register_Norminal_InsertsNewUserInDb&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::F1403B05-205C-45D6-9327-46F548B8BA5D::net6.0::LifeAssistant.Web.Tests.Database.RepositoryTests.Insert_InsertsRecordInDb&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::F1403B05-205C-45D6-9327-46F548B8BA5D::net6.0::LifeAssistant.Web.Tests.Database.ApplicationUserRepositoryTest.FindByUsername_WithExistingUserName_InsertsRecordInDb&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests.Appointment_JustCreate_IsPlanned&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests.Appointment_DateInThePast_Throws&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests.Appointment_WithAgencyEmployee_Throws&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests.Appointment_Accept_IsAccepted&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests.Appointment_PickUpPlanned_Throws&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;ProjectFile&gt;68491376-0088-46E8-936A-D9ADB6644AAA/d:Application/f:UsersApplicationTests.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Database/f:RepositoryTests.cs&lt;/ProjectFile&gt;&#xD;

@@ -13,7 +13,7 @@ public class RepositoryTests : DatabaseTest
     public async Task Insert_InsertsRecordInDb()
     {
         // Given
-        ApplicationUser user = this.dataFactory.CreateApplicationUser();
+        ApplicationUser user = this.dataFactory.CreateAgencyEmployee();
 
         var repository = new ApplicationUserRepository(this.context);
 

@@ -13,7 +13,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
     public async Task FindByUsername_WithExistingUserName_InsertsRecordInDb()
     {
         // Given
-        ApplicationUser user = this.dataFactory.CreateApplicationUser();
+        ApplicationUser user = this.dataFactory.CreateAgencyEmployee();
         await this.context.Users.AddAsync(user);
         await this.context.SaveChangesAsync();
         
