@@ -54,7 +54,10 @@ public class AuthenticationIntegrationTests : IntegrationTests
             "John Doe", 
             BCrypt.Net.BCrypt.HashPassword("dgy!zue654)à5@64dez"),
             ApplicationUserRole.LifeAssistant
-        );
+        )
+        {
+            Validated = true
+        };
 
         await this.givenDbContext.Users.AddAsync(user);
         await this.givenDbContext.SaveChangesAsync();
