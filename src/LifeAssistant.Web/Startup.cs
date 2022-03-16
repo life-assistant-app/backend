@@ -62,6 +62,13 @@ public class Startup
         });
         
         app.UseRouting();
+        app.UseCors(cors =>
+        {
+            cors.AllowAnyOrigin();
+            cors.AllowAnyMethod();
+            cors.AllowAnyHeader();
+        });
+        
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
