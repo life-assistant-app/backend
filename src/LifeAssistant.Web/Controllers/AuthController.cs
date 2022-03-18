@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
     /// </param>
     /// <returns>JWT token for the user</returns>
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
         return Ok(await this.application.Login(request));
     }
