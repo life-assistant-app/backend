@@ -11,6 +11,7 @@ using LifeAssistant.Core.Application.Users;
 using LifeAssistant.Core.Application.Users.Contracts;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Tests.Application.FakePersistence;
+using LifeAssistant.Web.Tests;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
@@ -18,26 +19,36 @@ namespace LifeAssistant.Core.Tests.Application;
 
 public class UsersApplicationTests
 {
+    private DataFactory dataFactory = new DataFactory();
+
     [Fact]
     public async Task Register_Nominal_InsertsUnvalidatedUserWithHashedPassword()
     {
         // Given
         var fakeRepository = new FakeApplicationUserRepository();
-        var application = new UsersApplication(fakeRepository, null);
-        var username = "John Doe";
+        var application = new UsersApplication(fakeRepository, string.Empty);
+        var username = "shepard.n7";
         var password = "e89fre4f!9er8@";
+        var firstName = "John";
+        var lastName = "Shepard";
         var role = "LifeAssistant";
 
         // When
-        RegisterResponse result = await application.Register(new RegisterRequest(username, password, role));
+        RegisterResponse result = await application.Register(
+            new RegisterRequest(username, password, firstName, lastName, role)
+        );
 
         // Then
         result.Username.Should().Be(username);
+        result.FirstName.Should().Be(firstName);
+        result.LastName.Should().Be(lastName);
         result.Validated.Should().Be(false);
         result.Role.Should().Be(ApplicationUserRole.LifeAssistant.ToString());
 
         fakeRepository.Data.Should().HaveCount(1);
-        fakeRepository.Data.First().Username.Should().Be(username);
+        fakeRepository.Data.First().UserName.Should().Be(username);
+        fakeRepository.Data.First().FirstName.Should().Be(firstName);
+        fakeRepository.Data.First().LastName.Should().Be(lastName);
         fakeRepository.Data.First().Password.Should().NotBe(password);
         fakeRepository.Data.First().Validated.Should().Be(false);
         fakeRepository.Data.First().Role.Should().Be(ApplicationUserRole.LifeAssistant);
@@ -60,21 +71,18 @@ public class UsersApplicationTests
         };
 
         var application = new UsersApplication(fakeRepository, jwtSecret);
-        var username = "John Doe";
-        var password = "e89fre4f!9er8@";
-        ApplicationUserRole role = ApplicationUserRole.AgencyEmployee;
-
-        var applicationUser = new ApplicationUser(username, BCrypt.Net.BCrypt.HashPassword(password), role)
-        {
-            Validated = true
-        };
-
-        fakeRepository.Data.Add(applicationUser);
+        ApplicationUser user = this.dataFactory.CreateAgencyEmployee();
+        user.Validated = true;
+        
+        fakeRepository.Data.Add(user);
 
         // When
-        string tokenString = await application.Login(new LoginRequest(username, password));
+        LoginResponse response = await application.Login(
+            new LoginRequest(user.UserName, this.dataFactory.UserPassword)
+        );
 
         // Then
+        string tokenString = response.SecurityToken;
         var handler = new JwtSecurityTokenHandler();
         SecurityToken token;
         ClaimsPrincipal principal = handler.ValidateToken(tokenString, tokenValidationSpecs, out token);
@@ -85,9 +93,9 @@ public class UsersApplicationTests
         Claim thirdClaim = claims[2];
 
         firstClaim.Type.Should().Be(ClaimTypes.NameIdentifier);
-        firstClaim.Value.Should().Be(applicationUser.Id.ToString());
+        firstClaim.Value.Should().Be(user.Id.ToString());
         secondClaim.Type.Should().Be(ClaimTypes.Name);
-        secondClaim.Value.Should().Be(applicationUser.Username);
+        secondClaim.Value.Should().Be(user.UserName);
         thirdClaim.Type.Should().Be(ClaimTypes.Role);
         thirdClaim.Value.Should().Be("AgencyEmployee");
     }
@@ -100,40 +108,32 @@ public class UsersApplicationTests
         var jwtSecret = "my-secret-string-to-sign-jwt-token";
 
         var application = new UsersApplication(fakeRepository, jwtSecret);
-        var username = "John Doe";
-        var password = "e89fre4f!9er8@";
-        ApplicationUserRole role = ApplicationUserRole.AgencyEmployee;
 
-        var applicationUser = new ApplicationUser(username, BCrypt.Net.BCrypt.HashPassword(password), role)
-        {
-            Validated = true
-        };
+        ApplicationUser applicationUser = this.dataFactory.CreateAgencyEmployee();
         fakeRepository.Data.Add(applicationUser);
 
         // When
-        Func<Task> act = async () => await application.Login(new LoginRequest(username, "not the right password"));
+        Func<Task> act = async () => await application.Login(new LoginRequest(applicationUser.UserName, "not the right password"));
 
         // Then
         await act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Fact]
-    public async Task Login_Unvalidateduser_ThrowsException()
+    public async Task Login_UnvalidatedUser_ThrowsException()
     {
         // Given
         var fakeRepository = new FakeApplicationUserRepository();
         var jwtSecret = "my-secret-string-to-sign-jwt-token";
 
         var application = new UsersApplication(fakeRepository, jwtSecret);
-        var username = "John Doe";
-        var password = "e89fre4f!9er8@";
-        ApplicationUserRole role = ApplicationUserRole.AgencyEmployee;
 
-        var applicationUser = new ApplicationUser(username, BCrypt.Net.BCrypt.HashPassword(password), role);
+        var applicationUser = this.dataFactory.CreateAgencyEmployee();
         fakeRepository.Data.Add(applicationUser);
 
         // When
-        Func<Task> act = async () => await application.Login(new LoginRequest(username, password));
+        Func<Task> act = async () =>
+            await application.Login(new LoginRequest(applicationUser.UserName, this.dataFactory.UserPassword));
 
         // Then
         await act.Should().ThrowAsync<InvalidOperationException>();

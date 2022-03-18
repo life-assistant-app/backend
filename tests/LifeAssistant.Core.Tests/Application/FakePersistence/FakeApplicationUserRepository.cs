@@ -9,6 +9,6 @@ public class FakeApplicationUserRepository : FakeRepository<ApplicationUser>, IA
 {
     public Task<ApplicationUser> FindByUsername(string username)
     {
-        return Task.FromResult(this.Data.First(user => user.Username == username));
+        return Task.FromResult(this.Data.First(user => user.UserName == username));
     }
 }

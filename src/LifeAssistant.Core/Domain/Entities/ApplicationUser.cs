@@ -4,12 +4,12 @@ namespace LifeAssistant.Core.Domain.Entities;
 
 public class ApplicationUser : BaseEntity
 {
-    private string username;
+    private string userName;
 
-    public string Username
+    public string UserName
     {
-        get => username;
-        private set => username = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
+        get => userName;
+        private set => userName = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
     }
 
     private string password;
@@ -20,23 +20,43 @@ public class ApplicationUser : BaseEntity
         private set => password = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
     }
 
+    private string firstName;
+
+    public string FirstName
+    {
+        get => firstName;
+        private set => firstName = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
+    }
+    
+    private string lastName;
+    
+    public string LastName
+    {
+        get => lastName;
+        private set => lastName = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
+    }
+    
     public ApplicationUserRole Role { get; }
     public bool Validated { get; set; }
 
-    public ApplicationUser(Guid id, string username, string password, ApplicationUserRole role,
+    public ApplicationUser(Guid id, string userName,string password,string firstname, string lastname,  ApplicationUserRole role,
         bool validated) : base(id)
     {
-        Username = username;
+        UserName = userName;
         Password = password;
+        FirstName = firstname;
+        LastName = lastname;
         Role = role;
         Validated = validated;
     }
 
-    public ApplicationUser(string username, string password, ApplicationUserRole role) : base(Guid.NewGuid())
+    public ApplicationUser(string userName, string password,string firstname, string lastname, ApplicationUserRole role) : base(Guid.NewGuid())
     {
         Validated = false;
-        Username = username;
+        UserName = userName;
         Password = password;
+        FirstName = firstname;
+        LastName = lastname;
         Role = role;
     }
 }
