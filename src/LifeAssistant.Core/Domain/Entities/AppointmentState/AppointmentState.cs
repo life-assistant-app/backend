@@ -2,14 +2,8 @@
 
 public abstract class AppointmentState : IAppointmentState
 {
-    protected Appointment appointment;
-
-    protected AppointmentState(Appointment appointment)
-    {
-        this.appointment = appointment;
-    }
-
+    public Appointment Appointment { get; set; }
+    
     public abstract string Name { get; }
-    public abstract IAppointmentState Accept();
-    public abstract IAppointmentState PickUp();
+    public abstract bool AcceptState(IAppointmentState state);
 }

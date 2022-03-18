@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Web.Tests;
 using Xunit;
 
@@ -18,13 +19,12 @@ public class AppointmentTests
         
         // When
         var appointment = new Appointment(
-            this.dataFactory.CreateLifeAssistant(),
             dateTime
         );
         
         // Then
         appointment.Id.Should().NotBeEmpty();
-        appointment.State.Should().Be("Planned");
+        appointment.State.Name.Should().Be("Planned");
         appointment.DateTime.Should().Be(dateTime);
     }
     
@@ -32,31 +32,25 @@ public class AppointmentTests
     public void Appointment_AcceptPlanned_IsAccepted()
     {
         // Given
-        var appointment = new Appointment(
-            this.dataFactory.CreateLifeAssistant(),
-            DateTime.Now.Add(TimeSpan.FromDays(3))
-        );
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
 
         // When
-        appointment.Accept();
+        appointment.State = new PendingAppointmentState();
         
         // Then
-        appointment.State.Should().Be("Pending Pickup");
+        appointment.State.Name.Should().Be("Pending Pickup");
     }
     
     [Fact]
     public void Appointment_AcceptFinished_Throws()
     {
         // Given
-        var appointment = new Appointment(
-            this.dataFactory.CreateLifeAssistant(),
-            DateTime.Now.Add(TimeSpan.FromDays(3))
-        );
-        appointment.Accept();
-        appointment.Pickup();
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
+        appointment.State = new PendingAppointmentState();
+        appointment.State = new FinishedAppointmentState();
 
         // When
-        Action act = () => appointment.Accept();
+        Action act = () =>appointment.State = new PendingAppointmentState();
         
         // Then
         act.Should().Throw<InvalidOperationException>();
@@ -66,16 +60,13 @@ public class AppointmentTests
     public void Appointment_PickupFinished_Throws()
     {
         // Given
-        var appointment = new Appointment(
-            this.dataFactory.CreateLifeAssistant(),
-            DateTime.Now.Add(TimeSpan.FromDays(3))
-        );
-
-        appointment.Accept();
-        appointment.Pickup();
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
+        
+        appointment.State = new PendingAppointmentState();
+        appointment.State = new FinishedAppointmentState();
 
         // When
-        Action act = () => appointment.Pickup();
+        Action act = () => appointment.State = new PendingAppointmentState();
         
         // Then
         act.Should().Throw<InvalidOperationException>();
@@ -85,14 +76,11 @@ public class AppointmentTests
     public void Appointment_AcceptPending_Throws()
     {
         // Given
-        var appointment = new Appointment(
-            this.dataFactory.CreateLifeAssistant(),
-            DateTime.Now.Add(TimeSpan.FromDays(3))
-        );
-        appointment.Accept();
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
+        appointment.State = new PendingAppointmentState();
 
         // When
-        Action act = () => appointment.Accept();
+        Action act = () => appointment.State = new PendingAppointmentState();;
         
         // Then
         act.Should().Throw<InvalidOperationException>();
@@ -102,13 +90,10 @@ public class AppointmentTests
     public void Appointment_PickUpPlanned_Throws()
     {
         // Given
-        var appointment = new Appointment(
-            this.dataFactory.CreateLifeAssistant(),
-            DateTime.Now.Add(TimeSpan.FromDays(3))
-        );
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
 
         // When
-        Action act = () => appointment.Pickup();
+        Action act = () => appointment.State = new FinishedAppointmentState();
         
         // Then
         act.Should().Throw<InvalidOperationException>();
@@ -118,17 +103,14 @@ public class AppointmentTests
     public void Appointment_PickUpPending_IsFinished()
     {
         // Given
-        var appointment = new Appointment(
-            this.dataFactory.CreateLifeAssistant(),
-            DateTime.Now.Add(TimeSpan.FromDays(3))
-        );
-        appointment.Accept();
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
+        appointment.State = new PendingAppointmentState();
 
         // When
-        appointment.Pickup();
+        appointment.State = new FinishedAppointmentState();
         
         // Then
-        appointment.State.Should().Be("Finished");
+        appointment.State.Name.Should().Be("Finished");
     }
     
     [Fact]
@@ -138,28 +120,11 @@ public class AppointmentTests
         var dateTime = DateTime.Now.Subtract(TimeSpan.FromDays(3));
         
         // When
-        Action act = () => new Appointment(
-            this.dataFactory.CreateAgencyEmployee(),
-            dateTime
-        );
+        Action act = () => new Appointment(dateTime);
         
         // Then
         act.Should().Throw<ArgumentException>();
     }
     
-    [Fact]
-    public void Appointment_WithAgencyEmployee_Throws()
-    {
-        // Given
-        var dateTime = DateTime.Now.Add(TimeSpan.FromDays(3));
-        
-        // When
-        Action act = () => new Appointment(
-            this.dataFactory.CreateAgencyEmployee(),
-            dateTime
-        );
-        
-        // Then
-        act.Should().Throw<ArgumentException>();
-    }
+
 }

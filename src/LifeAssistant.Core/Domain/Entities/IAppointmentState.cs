@@ -2,8 +2,8 @@
 
 public interface IAppointmentState
 {
+    Appointment Appointment { get; set; }
     string Name { get; }
     
-    IAppointmentState Accept();
-    IAppointmentState PickUp();
+    bool AcceptState(IAppointmentState state);
 }

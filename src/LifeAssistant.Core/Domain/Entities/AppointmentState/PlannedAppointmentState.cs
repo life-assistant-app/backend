@@ -3,20 +3,8 @@
 public class PlannedAppointmentState : AppointmentState
 {
     public override string Name => "Planned";
-    
-    public PlannedAppointmentState(Appointment appointment) : base(appointment)
+    public override bool AcceptState(IAppointmentState state)
     {
+        return state is PendingAppointmentState;
     }
-    
-    public override IAppointmentState Accept()
-    {
-        return new AcceptedAppointmentState(this.appointment);
-    }
-
-    public override IAppointmentState PickUp()
-    {
-        throw new InvalidOperationException();
-    }
-
-
 }
