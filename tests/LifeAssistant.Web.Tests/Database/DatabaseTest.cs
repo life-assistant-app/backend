@@ -10,11 +10,16 @@ namespace LifeAssistant.Web.Tests.Database;
 public class DatabaseTest : WebTests,IAsyncLifetime
 {
     protected ApplicationDbContext context;
-    protected DataFactory dataFactory = new DataFactory();
+    protected DbDataFactory dbDataFactory;
+
+    public DatabaseTest()
+    {
+        this.context = this.BuildNewDbContext();
+        this.dbDataFactory = new DbDataFactory(this.context);
+    }
 
     public virtual async Task InitializeAsync()
     {
-        this.context = this.BuildNewDbContext();
         await this.context.Database.MigrateAsync();
     }
 

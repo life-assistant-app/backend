@@ -16,14 +16,17 @@ public class IntegrationTests : WebTests,IClassFixture<WebApplicationFactory<Sta
     protected readonly HttpClient client;
     protected readonly ApplicationDbContext givenDbContext;
     protected readonly ApplicationDbContext assertDbContext;
+    protected readonly DbDataFactory dbDataFactory;
 
     public IntegrationTests(WebApplicationFactory<Startup> factory)
     {
         this.client = factory.CreateClient();
-        IConfiguration configuration = factory.Services.GetService<IConfiguration>();
+        IConfiguration configuration = factory.Services.GetService<IConfiguration>() ?? throw new InvalidOperationException("Can't get Configuration from DI");
 
         givenDbContext = new ApplicationDbContext(GetOptionsForOtherDbContext(configuration));
         assertDbContext = new ApplicationDbContext(GetOptionsForOtherDbContext(configuration));
+
+        this.dbDataFactory = new DbDataFactory(this.givenDbContext);
     }
     
     public DbContextOptions GetOptionsForOtherDbContext(IConfiguration configuration)

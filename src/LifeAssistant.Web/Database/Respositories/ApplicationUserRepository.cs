@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Persistence;
+using LifeAssistant.Web.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LifeAssistant.Web.Database.Respositories;
 
-public class ApplicationUserRepository: Repository<ApplicationUser>, IApplicationUserRepository
+public class ApplicationUserRepository : Repository<ApplicationUserEntity>,IApplicationUserRepository
 {
     private readonly ApplicationDbContext context;
 
@@ -14,10 +15,17 @@ public class ApplicationUserRepository: Repository<ApplicationUser>, IApplicatio
         this.context = context;
     }
     
-    public Task<ApplicationUser> FindByUsername(string username)
+    public async Task<ApplicationUser> FindByUsername(string username)
     {
-        return this.context
+        ApplicationUserEntity entity = await this.context
             .Users
-            .FirstAsync(user => user.Username == username);
+            .FirstAsync(user => user.UserName == username);
+
+        return entity.ToDomainEntity();
+    }
+
+    public async Task Insert(ApplicationUser applicationUser)
+    {
+        await this.Insert(new ApplicationUserEntity(applicationUser));
     }
 }

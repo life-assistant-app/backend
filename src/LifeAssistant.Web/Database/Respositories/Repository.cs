@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Persistence;
+using LifeAssistant.Web.Database.Entities;
 
 namespace LifeAssistant.Web.Database.Respositories;
 
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
+public class Repository<TDbEntity> where TDbEntity : BaseDbEntity
 {
     private readonly ApplicationDbContext context;
 
@@ -13,9 +14,9 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
         this.context = context;
     }
 
-    public async Task Insert(TEntity entity)
+    public async Task Insert(TDbEntity entity)
     {
-        await this.context.Set<TEntity>().AddAsync(entity);
+        await this.context.Set<TDbEntity>().AddAsync(entity);
     }
 
     public async Task Save()

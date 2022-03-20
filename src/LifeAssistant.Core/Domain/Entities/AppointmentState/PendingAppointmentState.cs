@@ -1,19 +1,10 @@
 ﻿namespace LifeAssistant.Core.Domain.Entities.AppointmentState;
 
-public class AcceptedAppointmentState : AppointmentState
+public class PendingAppointmentState : AppointmentState
 {
-    public AcceptedAppointmentState(Appointment appointment) : base(appointment)
-    {
-    }
-
     public override string Name => "Pending Pickup";
-    public override IAppointmentState Accept()
+    public override bool AcceptState(IAppointmentState state)
     {
-        throw new InvalidOperationException();
-    }
-
-    public override IAppointmentState PickUp()
-    {
-        return new FinishedAppointmentState(this.appointment);
+        return state is FinishedAppointmentState;
     }
 }

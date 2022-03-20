@@ -1,0 +1,45 @@
+﻿@startuml
+class ApplicationUser {
+    +<<get>> Id: Guid
+    +<<get>> UserName: string
+    +<<get>> Password: string
+    +<<get>> FirstName: string
+    +<<get>> LastName: string
+    +<<get>><<set>> validated: bool
+}
+
+enum ApplicationUseRole {
+    LifeAssistant,
+    AgencyEmployee
+}
+
+class Appointment {
+    +<<get>> Id: Guid
+    + DateTime: DateTime
+}
+
+interface IAppointmentState {
+    +<<get>> Name: string
+    + AcceptState(state: IAppointmentState): bool
+}
+
+abstract class AppointmentState {
+    
+}
+
+class PlannedAppointmentState
+class PendingAppointmentState
+class FinishedAppointmentState
+
+AppointmentState <|-- PlannedAppointmentState
+AppointmentState <|-- PendingAppointmentState
+AppointmentState <|-- FinishedAppointmentState
+IAppointmentState <|-- AppointmentState
+IAppointmentState --> Appointment : "+ <<get>> <<set>> Appointment"
+IAppointmentState <-- Appointment : "+ <<get>> <<set>> State"
+
+ApplicationUser -- ApplicationUseRole : "+<<get>>Role"
+
+ApplicationUser *-- Appointment : "+ <<get>> Appointments"
+
+@enduml

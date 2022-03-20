@@ -24,6 +24,8 @@ public class UsersApplication
         var applicationUser = new ApplicationUser(
             request.Username,
             BCrypt.Net.BCrypt.HashPassword(request.Password),
+            request.FirstName,
+            request.LastName,
             Enum.Parse<ApplicationUserRole>(request.Role)
         );
         
@@ -32,13 +34,15 @@ public class UsersApplication
 
         return new RegisterResponse(
             applicationUser.Id,
-            applicationUser.Username,
+            applicationUser.UserName,
             applicationUser.Role.ToString(),
+            applicationUser.FirstName,
+            applicationUser.LastName,
             applicationUser.Validated
         );
     }
 
-    public async Task<string> Login(LoginRequest request)
+    public async Task<LoginResponse> Login(LoginRequest request)
     {
         ApplicationUser applicationUser = await applicationUserRepository.FindByUsername(request.Username);
         EnsureUserFoundAndPasswordMatch(request.Password, applicationUser);
@@ -53,7 +57,7 @@ public class UsersApplication
         SecurityTokenDescriptor tokenDescriptor = BuildTokenDescriptor(applicationUser);
         SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
-        return tokenHandler.WriteToken(token);
+        return new LoginResponse(tokenHandler.WriteToken(token));
     }
     
     
@@ -64,7 +68,7 @@ public class UsersApplication
             Subject = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.NameIdentifier, applicationUser.Id.ToString()),
-                new Claim(ClaimTypes.Name, applicationUser.Username),
+                new Claim(ClaimTypes.Name, applicationUser.UserName),
                 new Claim(ClaimTypes.Role, applicationUser.Role.ToString()),
             }),
             Expires = DateTime.UtcNow.AddDays(7),
@@ -79,7 +83,7 @@ public class UsersApplication
         ArgumentNullException.ThrowIfNull(user);
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
         {
-            throw new ArgumentException();
+            throw new ArgumentException("Invalid password");
         }
     }
 }
