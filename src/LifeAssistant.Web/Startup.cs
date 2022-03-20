@@ -40,6 +40,11 @@ public class Startup
         services.AddScoped((servicesProviders) =>
             new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
                 Configuration["JWT_SECRET"]));
+        /*services.AddScoped(servicesProviders =>
+        {
+            var httpContext = servicesProviders.GetService<IHttpContextAccessor>().HttpContext;
+
+        })*/
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
