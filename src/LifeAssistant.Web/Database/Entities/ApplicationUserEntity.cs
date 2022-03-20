@@ -8,7 +8,7 @@ public class ApplicationUserEntity : BaseDbEntity
     {
     }
 
-    public ApplicationUserEntity(ApplicationUser applicationUser)
+    public ApplicationUserEntity(IApplicationUserWithAppointments applicationUser)
     {
         this.Id = applicationUser.Id;
         this.UserName = applicationUser.UserName;
@@ -17,6 +17,9 @@ public class ApplicationUserEntity : BaseDbEntity
         this.LastName = applicationUser.LastName;
         this.Role = applicationUser.Role;
         this.Validated = applicationUser.Validated;
+        this.Appointments = applicationUser.Appointments
+            .Select(appointment => new AppointmentEntity(appointment))
+            .ToList();
     }
 
     public string UserName { get; set; }
@@ -25,8 +28,9 @@ public class ApplicationUserEntity : BaseDbEntity
     public string LastName { get; set; }
     public ApplicationUserRole Role { get; set; }
     public bool Validated { get; set; }
+    public List<AppointmentEntity> Appointments { get; set; } = new();
 
-    public ApplicationUser ToDomainEntity()
+    public ApplicationUser ToDomainEntity(IAppointmentStateFactory factory)
     {
         return new ApplicationUser(
             this.Id, 
@@ -35,7 +39,10 @@ public class ApplicationUserEntity : BaseDbEntity
             this.FirstName,
             this.LastName, 
             this.Role,
-            this.Validated
+            this.Validated,
+            this.Appointments
+                .Select(appointment => appointment.ToDomainEntity(factory))
+                .ToList()
         );
     }
 }

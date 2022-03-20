@@ -2,10 +2,9 @@
 
 namespace LifeAssistant.Core.Domain.Entities;
 
-public class Appointment : BaseEntity
+public class Appointment : Entity
 {
     private IAppointmentState state;
-    private ApplicationUser lifeAssistant;
     private DateTime dateTime;
     
     /// Reflexion to simplify state :
@@ -54,10 +53,10 @@ public class Appointment : BaseEntity
         this.DateTime = dateTime;
     }
 
-    public Appointment(Guid id, DateTime dateTime, IAppointmentStateFactory stateFactory)
+    public Appointment(Guid id, DateTime dateTime, IAppointmentStateFactory stateFactory, string stateName)
         : this(id, dateTime)
     {
-        state = stateFactory.BuildStateFromAppointment(this);
+        state = stateFactory.BuildStateFromAppointment(this, stateName);
     }
 
     public Appointment(DateTime dateTime)

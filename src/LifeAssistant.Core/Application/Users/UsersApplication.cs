@@ -44,7 +44,7 @@ public class UsersApplication
 
     public async Task<LoginResponse> Login(LoginRequest request)
     {
-        ApplicationUser applicationUser = await applicationUserRepository.FindByUsername(request.Username);
+        IApplicationUser applicationUser = await applicationUserRepository.FindByUsername(request.Username);
         EnsureUserFoundAndPasswordMatch(request.Password, applicationUser);
 
         if (!applicationUser.Validated)
@@ -61,7 +61,7 @@ public class UsersApplication
     }
     
     
-    private SecurityTokenDescriptor BuildTokenDescriptor(ApplicationUser applicationUser)
+    private SecurityTokenDescriptor BuildTokenDescriptor(IApplicationUser applicationUser)
     {
         return new SecurityTokenDescriptor()
         {
@@ -78,7 +78,7 @@ public class UsersApplication
     }
     
     
-    private static void EnsureUserFoundAndPasswordMatch(string password, ApplicationUser user)
+    private static void EnsureUserFoundAndPasswordMatch(string password, IApplicationUser user)
     {
         ArgumentNullException.ThrowIfNull(user);
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password))

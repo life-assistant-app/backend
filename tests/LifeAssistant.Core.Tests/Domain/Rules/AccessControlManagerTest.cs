@@ -14,12 +14,13 @@ public class AccessControlManagerTest
     private readonly DataFactory dataFactory = new DataFactory();
     
     [Fact]
-    public void EnsureUserCanCreateAppointment_AgencyEmployee_DoesNotThrow()
+    public async Task EnsureUserCanCreateAppointment_AgencyEmployee_DoesNotThrow()
     {
         // Given
         ApplicationUser user = this.dataFactory.CreateAgencyEmployee();
         var fakeRepository = new FakeApplicationUserRepository();
-        fakeRepository.Data.Add(user);
+        await fakeRepository.Insert(user);
+        await fakeRepository.Save();
         
         var accessControlManager = new AccessControlManager(user.Id, fakeRepository);
         
@@ -31,12 +32,13 @@ public class AccessControlManagerTest
     }
     
     [Fact]
-    public void EnsureUserCanCreateAppointment_LifeAssistant_Throws()
+    public async Task EnsureUserCanCreateAppointment_LifeAssistant_Throws()
     {
         // Given
         ApplicationUser user = this.dataFactory.CreateLifeAssistant();
         var fakeRepository = new FakeApplicationUserRepository();
-        fakeRepository.Data.Add(user);
+        await fakeRepository.Insert(user);
+        await fakeRepository.Save();
         
         var accessControlManager = new AccessControlManager(user.Id, fakeRepository);
         
@@ -44,6 +46,6 @@ public class AccessControlManagerTest
         Func<Task> act = async () => await accessControlManager.EnsureUserCanCreateAppointment();
         
         // Then
-        act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 }

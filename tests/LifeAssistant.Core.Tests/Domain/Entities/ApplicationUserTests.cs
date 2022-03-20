@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
 using Xunit;
@@ -20,11 +21,11 @@ public class ApplicationUserTests
             "Test LastName",
             ApplicationUserRole.LifeAssistant
         );
-        
+
         // Then
         action.Should().Throw<ArgumentException>();
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -32,17 +33,17 @@ public class ApplicationUserTests
     {
         // When
         Action action = () => new ApplicationUser(
-            "Test Username", 
-            invalidValue, 
+            "Test Username",
+            invalidValue,
             "Test FirstName",
             "Test LastName",
             ApplicationUserRole.LifeAssistant
         );
-        
+
         // Then
         action.Should().Throw<ArgumentException>();
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -50,17 +51,17 @@ public class ApplicationUserTests
     {
         // When
         Action action = () => new ApplicationUser(
-            "Test Username", 
-            "Test Password", 
+            "Test Username",
+            "Test Password",
             invalidValue,
             "Test LastName",
             ApplicationUserRole.LifeAssistant
         );
-        
+
         // Then
         action.Should().Throw<ArgumentException>();
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -68,13 +69,13 @@ public class ApplicationUserTests
     {
         // When
         Action action = () => new ApplicationUser(
-            "Test Username", 
-            "Test Password", 
+            "Test Username",
+            "Test Password",
             "Test FirstName",
             invalidValue,
             ApplicationUserRole.LifeAssistant
         );
-        
+
         // Then
         action.Should().Throw<ArgumentException>();
     }
@@ -88,10 +89,10 @@ public class ApplicationUserTests
         string firstname = "Test FirstName";
         string lastname = "Test LastName";
         ApplicationUserRole role = ApplicationUserRole.LifeAssistant;
-        
+
         // When
         var user = new ApplicationUser(username, password, firstname, lastname, role);
-        
+
         // Then
         user.Id.Should().NotBeEmpty();
         user.UserName.Should().Be(username);
@@ -105,17 +106,19 @@ public class ApplicationUserTests
     public void Constructor_Reconstitution_LoadsFields()
     {
         // Given
-        Guid id = Guid.NewGuid();
-        string username = "Test Username";
-        string password = "Test Password";
-        string firstname = "Test FirstName";
-        string lastname = "Test LastName";
-        ApplicationUserRole role = ApplicationUserRole.LifeAssistant;
-        bool activated = true;
-        
+        var id = Guid.NewGuid();
+        const string username = "Test Username";
+        const string password = "Test Password";
+        const string firstname = "Test FirstName";
+        const string lastname = "Test LastName";
+        const ApplicationUserRole role = ApplicationUserRole.LifeAssistant;
+        const bool activated = true;
+        var appointments = new List<Appointment>();
+
+
         // When
-        var user = new ApplicationUser(id, username, password, firstname, lastname, role, activated);
-        
+        var user = new ApplicationUser(id, username, password, firstname, lastname, role, activated, appointments);
+
         // Then
         user.Id.Should().NotBeEmpty();
         user.UserName.Should().Be(username);
@@ -123,5 +126,7 @@ public class ApplicationUserTests
         user.LastName.Should().Be(lastname);
         user.Role.Should().Be(role);
         user.Validated.Should().Be(true);
+        user.Appointments.Should().NotBeNull();
+        user.Appointments.Should().BeEmpty();
     }
 }

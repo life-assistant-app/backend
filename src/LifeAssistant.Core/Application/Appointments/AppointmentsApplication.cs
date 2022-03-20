@@ -16,9 +16,16 @@ public class AppointmentsApplication
         this.accessControlManager = accessControlManager;
     }
 
-    public Task<Appointment> CreateAppointment(ApplicationUser lifeAssistant, DateTime dateTime)
+    public async Task<Appointment> CreateAppointment(Guid lifeAssistantId, DateTime dateTime)
     {
-        throw new NotImplementedException();
+        IApplicationUserWithAppointments lifeAssistant = await applicationUserRepository.FindByIdWithAppointments(lifeAssistantId);
+        var appointment = new Appointment(dateTime);
+        lifeAssistant.Appointments.Add(appointment);
+        
+        await this.applicationUserRepository.Update(lifeAssistant);
+        await this.applicationUserRepository.Save();
+
+        return appointment;
     }
     
 }

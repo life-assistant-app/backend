@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using LifeAssistant.Core.Application.Users;
+using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database;
 using LifeAssistant.Web.Database.Respositories;
@@ -40,6 +42,7 @@ public class Startup
         services.AddScoped((servicesProviders) =>
             new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
                 Configuration["JWT_SECRET"]));
+        services.AddSingleton<IAppointmentStateFactory, AppointmentStateFactory>();
         /*services.AddScoped(servicesProviders =>
         {
             var httpContext = servicesProviders.GetService<IHttpContextAccessor>().HttpContext;

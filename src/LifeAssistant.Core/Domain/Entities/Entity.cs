@@ -1,11 +1,11 @@
 ﻿namespace LifeAssistant.Core.Domain.Entities;
 
-public class BaseEntity
+public abstract class Entity
 {
-    public Guid Id { get; }
-
-    public BaseEntity(Guid id)
+    protected Entity(Guid id)
     {
         Id = id;
     }
+
+    public Guid Id { get; }
 }

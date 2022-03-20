@@ -27,22 +27,24 @@ public class AppointmentsApplicationTests
             .Add(TimeSpan.FromHours(16));
 
         var fakeUserRepository = new FakeApplicationUserRepository();
-        fakeUserRepository.Data.Add(agencyEmployee);
-        fakeUserRepository.Data.Add(lifeAssistant);
+        await fakeUserRepository.Insert(agencyEmployee);
+        await fakeUserRepository.Save();
+        await fakeUserRepository.Insert(lifeAssistant);
+        await fakeUserRepository.Save();
         
         var accessControlManager = new AccessControlManager(agencyEmployee.Id, fakeUserRepository);
         var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager);
         
         // When
-        Appointment appointment = await appointmentApplication.CreateAppointment(lifeAssistant, appointmentDate);
+        Appointment appointment = await appointmentApplication.CreateAppointment(lifeAssistant.Id, appointmentDate);
 
         // Then
         appointment.Id.Should().NotBeEmpty();
         appointment.State.Name.Should().Be("Planned");
         appointment.DateTime.Should().Be(appointmentDate);
 
-        ApplicationUser lifeAssistantFromDb = fakeUserRepository.Data.First();
-        lifeAssistantFromDb.Appointments.Count().Shoud().Be(1);
+        IApplicationUserWithAppointments lifeAssistantFromDb = await fakeUserRepository.FindByIdWithAppointments(lifeAssistant.Id);
+        lifeAssistantFromDb.Appointments.Count().Should().Be(1);
         lifeAssistantFromDb.Appointments[0].Id.Should().NotBeEmpty();
         lifeAssistantFromDb.Appointments[0].State.Name.Should().Be("Planned");
         lifeAssistantFromDb.Appointments[0].DateTime.Should().Be(appointmentDate);

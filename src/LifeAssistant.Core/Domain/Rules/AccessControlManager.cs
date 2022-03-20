@@ -8,7 +8,7 @@ public class AccessControlManager
     private readonly Guid currentUserId;
     private readonly IApplicationUserRepository userRepository;
 
-    private ApplicationUser? currentUser;
+    private IApplicationUser? currentUser;
 
 
     public AccessControlManager(Guid currentUserId, IApplicationUserRepository userRepository)
@@ -19,14 +19,14 @@ public class AccessControlManager
 
     public async Task EnsureUserCanCreateAppointment()
     {
-        ApplicationUser user = await GetCurrentUser();
+        IApplicationUser user = await GetCurrentUser();
         if (user.Role is not ApplicationUserRole.AgencyEmployee)
         {
             throw new InvalidOperationException("Only Agency Employees can create Appointments");
         }
     }
 
-    public async Task<ApplicationUser> GetCurrentUser()
+    public async Task<IApplicationUser> GetCurrentUser()
     {
         return this.currentUser ??= await userRepository.FindById(this.currentUserId);
     }

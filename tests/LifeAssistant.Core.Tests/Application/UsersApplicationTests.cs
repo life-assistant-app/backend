@@ -71,14 +71,15 @@ public class UsersApplicationTests
         };
 
         var application = new UsersApplication(fakeRepository, jwtSecret);
-        ApplicationUser user = this.dataFactory.CreateAgencyEmployee();
-        user.Validated = true;
+        ApplicationUser applicationUser = this.dataFactory.CreateAgencyEmployee();
+        applicationUser.Validated = true;
         
-        fakeRepository.Data.Add(user);
+        await fakeRepository.Insert(applicationUser);
+        await fakeRepository.Save();
 
         // When
         LoginResponse response = await application.Login(
-            new LoginRequest(user.UserName, this.dataFactory.UserPassword)
+            new LoginRequest(applicationUser.UserName, this.dataFactory.UserPassword)
         );
 
         // Then
@@ -93,9 +94,9 @@ public class UsersApplicationTests
         Claim thirdClaim = claims[2];
 
         firstClaim.Type.Should().Be(ClaimTypes.NameIdentifier);
-        firstClaim.Value.Should().Be(user.Id.ToString());
+        firstClaim.Value.Should().Be(applicationUser.Id.ToString());
         secondClaim.Type.Should().Be(ClaimTypes.Name);
-        secondClaim.Value.Should().Be(user.UserName);
+        secondClaim.Value.Should().Be(applicationUser.UserName);
         thirdClaim.Type.Should().Be(ClaimTypes.Role);
         thirdClaim.Value.Should().Be("AgencyEmployee");
     }
@@ -110,7 +111,8 @@ public class UsersApplicationTests
         var application = new UsersApplication(fakeRepository, jwtSecret);
 
         ApplicationUser applicationUser = this.dataFactory.CreateAgencyEmployee();
-        fakeRepository.Data.Add(applicationUser);
+        await fakeRepository.Insert(applicationUser);
+        await fakeRepository.Save();
 
         // When
         Func<Task> act = async () => await application.Login(new LoginRequest(applicationUser.UserName, "not the right password"));
@@ -129,7 +131,8 @@ public class UsersApplicationTests
         var application = new UsersApplication(fakeRepository, jwtSecret);
 
         var applicationUser = this.dataFactory.CreateAgencyEmployee();
-        fakeRepository.Data.Add(applicationUser);
+        await fakeRepository.Insert(applicationUser);
+        await fakeRepository.Save();
 
         // When
         Func<Task> act = async () =>

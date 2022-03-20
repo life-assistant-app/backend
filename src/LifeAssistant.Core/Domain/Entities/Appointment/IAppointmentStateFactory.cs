@@ -2,5 +2,5 @@
 
 public interface IAppointmentStateFactory
 {
-    IAppointmentState BuildStateFromAppointment(Appointment appointment);
+    IAppointmentState BuildStateFromAppointment(Appointment appointment, string stateName);
 }

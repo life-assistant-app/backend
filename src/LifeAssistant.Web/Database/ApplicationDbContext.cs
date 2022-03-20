@@ -10,6 +10,8 @@ public class ApplicationDbContext : DbContext
 
     public ApplicationDbContext(DbContextOptions options) : base(options)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,5 +23,10 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Password);
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Validated);
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Role);
+        modelBuilder.Entity<ApplicationUserEntity>().HasMany<AppointmentEntity>();
+
+        modelBuilder.Entity<AppointmentEntity>().HasKey(appointment => appointment.Id);
+        modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.State);
+        modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.DateTime);
     }
 }
