@@ -39,8 +39,15 @@ public class ApplicationUser : BaseEntity
     public ApplicationUserRole Role { get; }
     public bool Validated { get; set; }
 
-    public ApplicationUser(Guid id, string userName,string password,string firstname, string lastname,  ApplicationUserRole role,
-        bool validated) : base(id)
+    public List<Appointment> Appointments { get; }
+    
+    public ApplicationUser(Guid id,
+        string userName,
+        string password,
+        string firstname, 
+        string lastname, 
+        ApplicationUserRole role,
+        bool validated, List<Appo) : base(id)
     {
         UserName = userName;
         Password = password;
@@ -48,15 +55,11 @@ public class ApplicationUser : BaseEntity
         LastName = lastname;
         Role = role;
         Validated = validated;
+        Appointments = new List<Appointment>();
     }
 
-    public ApplicationUser(string userName, string password,string firstname, string lastname, ApplicationUserRole role) : base(Guid.NewGuid())
+    public ApplicationUser(string userName, string password,string firstname, string lastname, ApplicationUserRole role) 
+        : this(Guid.NewGuid(), userName, password, firstname, lastname, role, false)
     {
-        Validated = false;
-        UserName = userName;
-        Password = password;
-        FirstName = firstname;
-        LastName = lastname;
-        Role = role;
     }
 }

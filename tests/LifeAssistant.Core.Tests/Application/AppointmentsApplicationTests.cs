@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using LifeAssistant.Core.Application.Appointments;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Rules;
@@ -13,11 +16,15 @@ public class AppointmentsApplicationTests
     private readonly DataFactory dataFactory = new DataFactory();
     
     [Fact]
-    public Task CreateAppointment_ByAgencyEmployeeWithLifeAssistant_InsertsPlannedAppointForLifeAssistant()
+    public async Task CreateAppointment_ByAgencyEmployeeWithLifeAssistant_InsertsPlannedAppointForLifeAssistant()
     {
         // Given
         ApplicationUser agencyEmployee = dataFactory.CreateAgencyEmployee();
         ApplicationUser lifeAssistant = dataFactory.CreateLifeAssistant();
+        
+        DateTime appointmentDate = DateTime.Today
+            .Add(TimeSpan.FromDays(1))
+            .Add(TimeSpan.FromHours(16));
 
         var fakeUserRepository = new FakeApplicationUserRepository();
         fakeUserRepository.Data.Add(agencyEmployee);
@@ -27,7 +34,17 @@ public class AppointmentsApplicationTests
         var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager);
         
         // When
-        var appointment = 
-        
+        Appointment appointment = await appointmentApplication.CreateAppointment(lifeAssistant, appointmentDate);
+
+        // Then
+        appointment.Id.Should().NotBeEmpty();
+        appointment.State.Name.Should().Be("Planned");
+        appointment.DateTime.Should().Be(appointmentDate);
+
+        ApplicationUser lifeAssistantFromDb = fakeUserRepository.Data.First();
+        lifeAssistantFromDb.Appointments.Count().Shoud().Be(1);
+        lifeAssistantFromDb.Appointments[0].Id.Should().NotBeEmpty();
+        lifeAssistantFromDb.Appointments[0].State.Name.Should().Be("Planned");
+        lifeAssistantFromDb.Appointments[0].DateTime.Should().Be(appointmentDate);
     }
 }

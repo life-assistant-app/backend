@@ -16,7 +16,7 @@ public class AppointmentsApplication
         this.accessControlManager = accessControlManager;
     }
 
-    public Appointment CreateAppointment(ApplicationUser lifeAssistant, DateTime dateTime)
+    public Task<Appointment> CreateAppointment(ApplicationUser lifeAssistant, DateTime dateTime)
     {
         throw new NotImplementedException();
     }
