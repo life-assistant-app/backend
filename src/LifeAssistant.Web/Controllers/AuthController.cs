@@ -41,6 +41,13 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
-        return Ok(await this.application.Login(request));
+        try
+        {
+            return Ok(await this.application.Login(request));
+        }
+        catch (Exception e) when (e is ArgumentException or InvalidOperationException)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

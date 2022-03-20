@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Web.Database.Entities;
@@ -11,7 +12,7 @@ namespace LifeAssistant.Web.Tests.Database;
 public class ApplicationUserRepositoryTest : DatabaseTest
 {
     [Fact]
-    public async Task FindByUsername_WithExistingUserName_InsertsRecordInDb()
+    public async Task FindByUsername_WithExistingUserName_ReturnsUserRecord()
     {
         // Given
         ApplicationUserEntity entity = await this.dbDataFactory.InsertValidatedAgencyEmployeeEntity();

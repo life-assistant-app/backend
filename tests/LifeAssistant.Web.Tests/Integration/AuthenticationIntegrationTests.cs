@@ -68,4 +68,19 @@ public class AuthenticationIntegrationTests : IntegrationTests
         LoginResponse token = await response.Content.ReadFromJsonAsync<LoginResponse>();
         token.SecurityToken.Should().NotBe(string.Empty);
     }
+    
+    [Fact]
+    public async Task Login_WithInCorrectCredentials_ReturnsToken()
+    {
+        // Given
+        var user = await this.dbDataFactory.InsertValidatedLifeAssistant();
+
+        var request = new LoginRequest("invalid username","invalid passowrd");
+        
+        // When
+        var response = await this.client.PostAsJsonAsync("/api/auth/login", request);
+        
+        // Then
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }
