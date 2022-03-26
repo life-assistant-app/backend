@@ -3,6 +3,7 @@
 public class PlannedAppointmentState : AppointmentState
 {
     public override string Name => "Planned";
+
     public override bool AcceptState(IAppointmentState state)
     {
         return state is PendingAppointmentState;

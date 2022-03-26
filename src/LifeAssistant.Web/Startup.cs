@@ -1,16 +1,16 @@
 ﻿using System.Reflection;
+using System.Text;
+using LifeAssistant.Core.Application.Appointments;
 using LifeAssistant.Core.Application.Users;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
+using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database;
 using LifeAssistant.Web.Database.Respositories;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -28,6 +28,38 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        ConfigureDbContext(services);
+        ConfigureAuth(services);
+        ConfigureDi(services);
+
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(ConfigureSwagger);
+    }
+
+    private void ConfigureDi(IServiceCollection services)
+    {
+        services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
+        services.AddScoped((servicesProviders) =>
+            new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
+                Configuration["JWT_SECRET"]));
+        services.AddScoped<AppointmentsApplication>();
+        services.AddSingleton<IAppointmentStateFactory, AppointmentStateFactory>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped(servicesProviders =>
+        {
+            var httpContext = servicesProviders
+                .GetService<IHttpContextAccessor>()
+                .HttpContext;
+
+            Guid currentUserId = Guid.Parse(httpContext.User.Claims.First().Value);
+
+            return new AccessControlManager(currentUserId, servicesProviders.GetService<IApplicationUserRepository>());
+        });
+    }
+
+    private void ConfigureDbContext(IServiceCollection services)
+    {
         services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
             new NpgsqlConnectionStringBuilder
             {
@@ -37,21 +69,6 @@ public class Startup
                 Password = Configuration["DB_PASSWORD"],
                 Database = Configuration["DB_NAME"]
             }.ToString()));
-
-        services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
-        services.AddScoped((servicesProviders) =>
-            new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
-                Configuration["JWT_SECRET"]));
-        services.AddSingleton<IAppointmentStateFactory, AppointmentStateFactory>();
-        /*services.AddScoped(servicesProviders =>
-        {
-            var httpContext = servicesProviders.GetService<IHttpContextAccessor>().HttpContext;
-
-        })*/
-
-        services.AddControllers();
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(ConfigureSwagger);
     }
 
 
@@ -62,13 +79,10 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
-        
+
         app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        });
-        
+        app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"); });
+
         app.UseRouting();
         app.UseCors(cors =>
         {
@@ -76,13 +90,14 @@ public class Startup
             cors.AllowAnyMethod();
             cors.AllowAnyHeader();
         });
-        
+
         app.UseHttpsRedirection();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
     }
-    
-    
+
+
     private void ConfigureSwagger(SwaggerGenOptions options)
     {
         options.SwaggerDoc("v1", new OpenApiInfo
@@ -128,5 +143,29 @@ public class Startup
         });
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    }
+
+    private void ConfigureAuth(IServiceCollection services)
+    {
+        var jwtSecret = Configuration["JWT_SECRET"] ??
+                        throw new ArgumentException("JWT_SECRET Env variable is not set");
+        var key = Encoding.ASCII.GetBytes(jwtSecret);
+
+        services.AddAuthentication(auth =>
+            {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(auth =>
+            {
+                auth.SaveToken = true;
+                auth.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
     }
 }

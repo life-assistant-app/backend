@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using LifeAssistant.Core.Domain.Entities;
-using LifeAssistant.Core.Persistence;
-using LifeAssistant.Web.Database.Entities;
+﻿using LifeAssistant.Web.Database.Entities;
 
 namespace LifeAssistant.Web.Database.Respositories;
 

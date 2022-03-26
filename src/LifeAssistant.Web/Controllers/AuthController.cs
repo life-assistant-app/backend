@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterRequest request)
     {
-        return Created("",await this.application.Register(request));
+        return Created("", await this.application.Register(request));
     }
 
     /// <summary>

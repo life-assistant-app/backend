@@ -11,7 +11,7 @@ public class FakeApplicationUserRepository : IApplicationUserRepository
 {
     public IReadOnlyList<IApplicationUserWithAppointments> Data { get; private set; }
     private List<IApplicationUserWithAppointments> newData;
-    
+
     public FakeApplicationUserRepository()
     {
         Data = new List<IApplicationUserWithAppointments>();
@@ -27,13 +27,13 @@ public class FakeApplicationUserRepository : IApplicationUserRepository
     {
         return this.Data.First(user => user.Id == entityId);
     }
-    
+
     public Task Save()
     {
         this.Data = newData.ToList();
         return Task.CompletedTask;
     }
-    
+
     public Task Insert(IApplicationUserWithAppointments entity)
     {
         this.newData.Add(entity);

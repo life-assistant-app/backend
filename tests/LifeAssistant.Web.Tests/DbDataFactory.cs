@@ -21,7 +21,7 @@ public class DbDataFactory
         ApplicationUserEntity agencyEmployee = new ApplicationUserEntity
         {
             Id = Guid.NewGuid(),
-            UserName = "shepard.n7",
+            UserName = "shepard.n7.employee",
             Password = BCrypt.Net.BCrypt.HashPassword(UserPassword),
             FirstName = "John",
             LastName = "Shepard",
@@ -39,7 +39,7 @@ public class DbDataFactory
         ApplicationUserEntity agencyEmployee = new ApplicationUserEntity
         {
             Id = Guid.NewGuid(),
-            UserName = "shepard.n7",
+            UserName = "shepard.n7.assistant",
             Password = BCrypt.Net.BCrypt.HashPassword(UserPassword),
             FirstName = "John",
             LastName = "Shepard",

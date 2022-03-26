@@ -33,11 +33,11 @@ public class ApplicationUserEntity : BaseDbEntity
     public ApplicationUser ToDomainEntity(IAppointmentStateFactory factory)
     {
         return new ApplicationUser(
-            this.Id, 
+            this.Id,
             this.UserName,
             this.Password,
             this.FirstName,
-            this.LastName, 
+            this.LastName,
             this.Role,
             this.Validated,
             this.Appointments

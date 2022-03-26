@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using LifeAssistant.Core.Domain.Entities;
+﻿using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +10,12 @@ public class ApplicationUserRepository : IApplicationUserRepository
     private readonly ApplicationDbContext context;
     private readonly IAppointmentStateFactory appointmentStateFactory;
 
-    public ApplicationUserRepository(ApplicationDbContext context, IAppointmentStateFactory appointmentStateFactory) 
+    public ApplicationUserRepository(ApplicationDbContext context, IAppointmentStateFactory appointmentStateFactory)
     {
         this.context = context;
         this.appointmentStateFactory = appointmentStateFactory;
     }
-    
+
     public async Task<IApplicationUser> FindByUsername(string username)
     {
         ApplicationUserEntity entity = await this.context
@@ -69,7 +68,7 @@ public class ApplicationUserRepository : IApplicationUserRepository
             .FirstAsync(u => u.Id == entityId);
         return applicationUserEntity.ToDomainEntity(this.appointmentStateFactory);
     }
-    
+
     public async Task Save()
     {
         await this.context.SaveChangesAsync();

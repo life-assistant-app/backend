@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using LifeAssistant.Core.Domain.Entities;
+﻿using LifeAssistant.Core.Domain.Entities;
 
 namespace LifeAssistant.Core.Persistence;
 

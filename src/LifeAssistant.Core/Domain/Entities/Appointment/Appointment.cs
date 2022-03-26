@@ -6,7 +6,7 @@ public class Appointment : Entity
 {
     private IAppointmentState state;
     private DateTime dateTime;
-    
+
     /// Reflexion to simplify state :
     /// Allow setting the state of the appointment, and not using Accept and Pickup
     /// methods (to have only on application method to update state)
@@ -30,7 +30,6 @@ public class Appointment : Entity
             {
                 throw new InvalidOperationException($"State {state.Name} does not accept {value.Name} as next state");
             }
-
         }
     }
 

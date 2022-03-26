@@ -53,7 +53,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
         result.Role.Should().Be(entity.Role);
         result.Validated.Should().Be(entity.Validated);
     }
-    
+
     [Fact]
     public async Task Update_UpdatesRecordInDb()
     {
@@ -108,7 +108,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
         userInDb.Validated.Should().Be(user.Validated);
         userInDb.Appointments.Should().HaveCount(1);
     }
-    
+
     [Fact]
     public async Task FindByIdWithAppointments_RetrievesRecordWithChildRecords()
     {
@@ -117,7 +117,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
         user.Appointments.Add(new Appointment(DateTime.Now.AddDays(1)));
         await this.context.Users.AddAsync((new ApplicationUserEntity(user)));
         await this.context.SaveChangesAsync();
-        
+
         var repository = new ApplicationUserRepository(this.context, factory);
 
         // When

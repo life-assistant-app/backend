@@ -7,7 +7,7 @@ using Xunit;
 
 namespace LifeAssistant.Web.Tests.Database;
 
-public class DatabaseTest : WebTests,IAsyncLifetime
+public class DatabaseTest : WebTests, IAsyncLifetime
 {
     protected ApplicationDbContext context;
     protected DbDataFactory dbDataFactory;
@@ -29,9 +29,9 @@ public class DatabaseTest : WebTests,IAsyncLifetime
         {
             Host = Environment.GetEnvironmentVariable("DB_HOST"),
             Port = int.Parse(Environment.GetEnvironmentVariable("DB_PORT")),
-            Username =  Environment.GetEnvironmentVariable("DB_USERNAME"),
-            Password =  Environment.GetEnvironmentVariable("DB_PASSWORD"),
-            Database =  Environment.GetEnvironmentVariable("DB_NAME")
+            Username = Environment.GetEnvironmentVariable("DB_USERNAME"),
+            Password = Environment.GetEnvironmentVariable("DB_PASSWORD"),
+            Database = Environment.GetEnvironmentVariable("DB_NAME")
         };
         var options = new DbContextOptionsBuilder()
             .UseNpgsql(builder.ToString())

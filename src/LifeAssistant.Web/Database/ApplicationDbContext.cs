@@ -1,5 +1,4 @@
-﻿using LifeAssistant.Core.Domain.Entities;
-using LifeAssistant.Web.Database.Entities;
+﻿using LifeAssistant.Web.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LifeAssistant.Web.Database;
@@ -13,7 +12,7 @@ public class ApplicationDbContext : DbContext
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ApplicationUserEntity>().HasKey(user => user.Id);

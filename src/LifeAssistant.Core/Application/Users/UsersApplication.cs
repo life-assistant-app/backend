@@ -18,7 +18,7 @@ public class UsersApplication
         this.applicationUserRepository = applicationUserRepository;
         this.jwtSecret = jwtSecret;
     }
-    
+
     public async Task<RegisterResponse> Register(RegisterRequest request)
     {
         var applicationUser = new ApplicationUser(
@@ -28,7 +28,7 @@ public class UsersApplication
             request.LastName,
             Enum.Parse<ApplicationUserRole>(request.Role)
         );
-        
+
         await this.applicationUserRepository.Insert(applicationUser);
         await this.applicationUserRepository.Save();
 
@@ -51,7 +51,7 @@ public class UsersApplication
         {
             throw new InvalidOperationException("User is not validated");
         }
-        
+
         var tokenHandler = new JwtSecurityTokenHandler();
 
         SecurityTokenDescriptor tokenDescriptor = BuildTokenDescriptor(applicationUser);
@@ -59,8 +59,8 @@ public class UsersApplication
 
         return new LoginResponse(tokenHandler.WriteToken(token));
     }
-    
-    
+
+
     private SecurityTokenDescriptor BuildTokenDescriptor(IApplicationUser applicationUser)
     {
         return new SecurityTokenDescriptor()
@@ -73,11 +73,12 @@ public class UsersApplication
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSecret)), SecurityAlgorithms.HmacSha256)
+                new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSecret)),
+                    SecurityAlgorithms.HmacSha256)
         };
     }
-    
-    
+
+
     private static void EnsureUserFoundAndPasswordMatch(string password, IApplicationUser user)
     {
         ArgumentNullException.ThrowIfNull(user);

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LifeAssistant.Core.Application;
 using LifeAssistant.Core.Application.Users;
 using LifeAssistant.Core.Application.Users.Contracts;
 using LifeAssistant.Core.Domain.Entities;
@@ -73,7 +71,7 @@ public class UsersApplicationTests
         var application = new UsersApplication(fakeRepository, jwtSecret);
         ApplicationUser applicationUser = this.dataFactory.CreateAgencyEmployee();
         applicationUser.Validated = true;
-        
+
         await fakeRepository.Insert(applicationUser);
         await fakeRepository.Save();
 
@@ -115,7 +113,8 @@ public class UsersApplicationTests
         await fakeRepository.Save();
 
         // When
-        Func<Task> act = async () => await application.Login(new LoginRequest(applicationUser.UserName, "not the right password"));
+        Func<Task> act = async () =>
+            await application.Login(new LoginRequest(applicationUser.UserName, "not the right password"));
 
         // Then
         await act.Should().ThrowAsync<ArgumentException>();

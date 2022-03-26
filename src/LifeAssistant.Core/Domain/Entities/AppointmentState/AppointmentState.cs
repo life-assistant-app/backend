@@ -3,7 +3,7 @@
 public abstract class AppointmentState : IAppointmentState
 {
     public Appointment Appointment { get; set; }
-    
+
     public abstract string Name { get; }
     public abstract bool AcceptState(IAppointmentState state);
 }
