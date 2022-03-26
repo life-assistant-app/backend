@@ -21,7 +21,8 @@
         "DB_PORT": "5432",
         "DB_USERNAME": "postgres",
         "DB_PASSWORD": "mysecretpassword",
-        "DB_NAME": "lifeassistant"
+        "DB_NAME": "lifeassistant",
+        "JWT_SECRET": "my-long-string-to-sign-jwt-tokens"
       }
     },
     "IIS Express": {

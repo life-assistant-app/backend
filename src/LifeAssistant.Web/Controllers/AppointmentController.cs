@@ -23,6 +23,7 @@ public class AppointmentController : ControllerBase
     /// <param name="id">Id of the life assistant to create the appointment</param>
     /// <param name="request">Appointment creation payload</param>
     /// <returns>The resulting appointment</returns>
+    [HttpPost]
     public async Task<ActionResult<GetAppointmentResponse>> CreateAppointment(Guid id, [FromBody] CreateAppointmentRequest request)
     {
         return Created("/api/assistants/{id:guid}/appointments",
