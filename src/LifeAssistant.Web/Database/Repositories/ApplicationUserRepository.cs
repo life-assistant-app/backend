@@ -3,7 +3,7 @@ using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LifeAssistant.Web.Database.Respositories;
+namespace LifeAssistant.Web.Database.Repositories;
 
 public class ApplicationUserRepository : IApplicationUserRepository
 {

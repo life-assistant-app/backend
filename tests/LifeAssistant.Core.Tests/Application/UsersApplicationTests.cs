@@ -90,6 +90,7 @@ public class UsersApplicationTests
         Claim firstClaim = claims[0];
         Claim secondClaim = claims[1];
         Claim thirdClaim = claims[2];
+        Claim fourthClaim = claims[3];
 
         firstClaim.Type.Should().Be(ClaimTypes.NameIdentifier);
         firstClaim.Value.Should().Be(applicationUser.Id.ToString());
@@ -97,6 +98,8 @@ public class UsersApplicationTests
         secondClaim.Value.Should().Be(applicationUser.UserName);
         thirdClaim.Type.Should().Be(ClaimTypes.Role);
         thirdClaim.Value.Should().Be("AgencyEmployee");
+        fourthClaim.Type.Should().Be(ClaimTypes.Surname);
+        fourthClaim.Value.Should().Be("John Shepard");
     }
 
     [Fact]

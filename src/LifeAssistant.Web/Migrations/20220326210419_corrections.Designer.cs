@@ -3,6 +3,7 @@ using System;
 using LifeAssistant.Web.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeAssistant.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220326210419_corrections")]
+    partial class corrections
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,7 +69,7 @@ namespace LifeAssistant.Web.Migrations
                     b.Property<Guid?>("ApplicationUserEntityId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ApplicationUserId")
+                    b.Property<Guid?>("ApplicationUserEntityId1")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("DateTime")
@@ -81,7 +83,7 @@ namespace LifeAssistant.Web.Migrations
 
                     b.HasIndex("ApplicationUserEntityId");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("ApplicationUserEntityId1");
 
                     b.ToTable("Appointments");
                 });
@@ -94,7 +96,7 @@ namespace LifeAssistant.Web.Migrations
 
                     b.HasOne("LifeAssistant.Web.Database.Entities.ApplicationUserEntity", null)
                         .WithMany()
-                        .HasForeignKey("ApplicationUserId")
+                        .HasForeignKey("ApplicationUserEntityId1")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

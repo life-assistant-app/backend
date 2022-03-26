@@ -5,7 +5,7 @@ using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Web.Database.Entities;
-using LifeAssistant.Web.Database.Respositories;
+using LifeAssistant.Web.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

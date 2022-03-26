@@ -36,7 +36,16 @@ public class DbDataFactory
 
     public async Task<ApplicationUserEntity> InsertValidatedLifeAssistant()
     {
-        ApplicationUserEntity agencyEmployee = new ApplicationUserEntity
+        var agencyEmployee = CreateApplicationUserEntity();
+        await this.context.Users.AddAsync(agencyEmployee);
+        await this.context.SaveChangesAsync();
+
+        return agencyEmployee;
+    }
+
+    private ApplicationUserEntity CreateApplicationUserEntity()
+    {
+        ApplicationUserEntity lifeAssistant = new ApplicationUserEntity
         {
             Id = Guid.NewGuid(),
             UserName = "shepard.n7.assistant",
@@ -46,9 +55,22 @@ public class DbDataFactory
             Role = ApplicationUserRole.LifeAssistant,
             Validated = true
         };
-        await this.context.Users.AddAsync(agencyEmployee);
+        return lifeAssistant;
+    }
+
+    public async Task<ApplicationUserEntity> InsertValidatedLifeAssistantWithAppointments()
+    {
+        var lifeAssistant = CreateApplicationUserEntity();
+        lifeAssistant.Appointments.Add(new AppointmentEntity()
+        {
+            DateTime = DateTime.Now.AddDays(1),
+            Id = Guid.NewGuid(),
+            State = "Planned"
+        });
+
+        await this.context.Users.AddAsync(lifeAssistant);
         await this.context.SaveChangesAsync();
 
-        return agencyEmployee;
+        return lifeAssistant;
     }
 }

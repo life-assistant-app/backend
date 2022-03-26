@@ -7,7 +7,7 @@ using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database;
-using LifeAssistant.Web.Database.Respositories;
+using LifeAssistant.Web.Database.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -44,6 +44,7 @@ public class Startup
             new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
                 Configuration["JWT_SECRET"]));
         services.AddScoped<AppointmentsApplication>();
+        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         services.AddSingleton<IAppointmentStateFactory, AppointmentStateFactory>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped(servicesProviders =>

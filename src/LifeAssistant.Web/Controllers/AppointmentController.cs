@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LifeAssistant.Web.Controllers;
 
 [ApiController]
-[Route("/api/assistants/{id:guid}/appointments")]
+[Route("/api")]
 public class AppointmentController : ControllerBase
 {
     private readonly AppointmentsApplication application;
@@ -16,6 +16,12 @@ public class AppointmentController : ControllerBase
         this.application = application;
     }
 
+    [HttpGet("appointments")]
+    public async Task<ActionResult<IList<GetAppointmentResponse>>> GetAppointments()
+    {
+        return Ok(await this.application.GetAppointments());
+    }
+
     /// <summary>
     /// Creates a new appointment for a life assistant.
     /// Only Agency Employees may call this endpoint
@@ -23,7 +29,7 @@ public class AppointmentController : ControllerBase
     /// <param name="id">Id of the life assistant to create the appointment</param>
     /// <param name="request">Appointment creation payload</param>
     /// <returns>The resulting appointment</returns>
-    [HttpPost]
+    [HttpPost("assistants/{id:guid}/appointments")]
     public async Task<ActionResult<GetAppointmentResponse>> CreateAppointment(Guid id, [FromBody] CreateAppointmentRequest request)
     {
         return Created("/api/assistants/{id:guid}/appointments",

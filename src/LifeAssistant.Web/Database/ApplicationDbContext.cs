@@ -6,6 +6,7 @@ namespace LifeAssistant.Web.Database;
 public class ApplicationDbContext : DbContext
 {
     public DbSet<ApplicationUserEntity> Users { get; set; }
+    public DbSet<AppointmentEntity> Appointments { get; set; }
 
     public ApplicationDbContext(DbContextOptions options) : base(options)
     {
@@ -22,7 +23,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Password);
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Validated);
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Role);
-        modelBuilder.Entity<ApplicationUserEntity>().HasMany<AppointmentEntity>();
+        modelBuilder.Entity<ApplicationUserEntity>().HasMany<AppointmentEntity>().WithOne()
+            .HasForeignKey("ApplicationUserId")
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<AppointmentEntity>().HasKey(appointment => appointment.Id);
         modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.State);

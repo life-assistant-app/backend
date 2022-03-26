@@ -70,6 +70,7 @@ public class UsersApplication
                 new Claim(ClaimTypes.NameIdentifier, applicationUser.Id.ToString()),
                 new Claim(ClaimTypes.Name, applicationUser.UserName),
                 new Claim(ClaimTypes.Role, applicationUser.Role.ToString()),
+                new Claim(ClaimTypes.Surname, $"{applicationUser.FirstName} {applicationUser.LastName}"),
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials =

@@ -42,7 +42,10 @@ public class DatabaseTest : WebTests, IAsyncLifetime
 
     public async Task DisposeAsync()
     {
+        this.context.RemoveRange(this.context.Appointments);
         this.context.RemoveRange(this.context.Users);
+        await this.context.SaveChangesAsync();
+
         await this.context.SaveChangesAsync();
         await this.context.DisposeAsync();
     }

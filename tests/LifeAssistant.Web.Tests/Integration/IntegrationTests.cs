@@ -65,7 +65,7 @@ public class IntegrationTests : WebTests, IClassFixture<WebApplicationFactory<St
 
     public async Task DisposeAsync()
     {
-        this.assertDbContext.RemoveRange(this.assertDbContext.Users.SelectMany(u => u.Appointments));
+        this.assertDbContext.RemoveRange(this.assertDbContext.Appointments);
         this.assertDbContext.RemoveRange(this.assertDbContext.Users);
         await this.assertDbContext.SaveChangesAsync();
 

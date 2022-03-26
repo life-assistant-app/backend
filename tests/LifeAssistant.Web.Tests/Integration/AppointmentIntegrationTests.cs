@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -33,5 +34,25 @@ public class AppointmentIntegrationTests : IntegrationTests
         var result = await response.Content.ReadFromJsonAsync<GetAppointmentResponse>();
         result.DateTime.Should().Be(request.DateTime);
         result.State.ToString().Should().Be("Planned");
+    }
+    
+    [Fact]
+    public async Task GetsAppointment_ReturnsAppointments()
+    {
+        // Given
+        ApplicationUserEntity agencyEmployee = await this.dbDataFactory.InsertValidatedAgencyEmployeeEntity();
+        ApplicationUserEntity lifeAssistant = await this.dbDataFactory.InsertValidatedLifeAssistantWithAppointments();
+
+        await Login(agencyEmployee.UserName, this.dbDataFactory.UserPassword);
+
+        // When
+        var response = await this.client.GetAsync($"/api/appointments");
+        // Then
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<List<GetAppointmentResponse>>();
+        result.Count.Should().Be(1);
+        result[0].Id.Should().Be(lifeAssistant.Appointments[0].Id);
+        result[0].State.Should().Be(lifeAssistant.Appointments[0].State);
+        result[0].DateTime.Date.Should().Be(lifeAssistant.Appointments[0].DateTime.Date);
     }
 }
