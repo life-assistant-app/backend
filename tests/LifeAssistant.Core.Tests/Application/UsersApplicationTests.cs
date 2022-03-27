@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -17,7 +18,7 @@ namespace LifeAssistant.Core.Tests.Application;
 
 public class UsersApplicationTests
 {
-    private DataFactory dataFactory = new DataFactory();
+    private readonly DataFactory dataFactory = new DataFactory();
 
     [Fact]
     public async Task Register_Nominal_InsertsUnvalidatedUserWithHashedPassword()
@@ -142,5 +143,45 @@ public class UsersApplicationTests
 
         // Then
         await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Fact]
+    public async Task GetLifeAssistants_ReturnsAllLifeAssistants()
+    {
+        // Given
+        var fakeRepository = new FakeApplicationUserRepository();
+        var application = new UsersApplication(fakeRepository, null);
+        
+        var applicationUser = this.dataFactory.CreateLifeAssistant();
+        await fakeRepository.Insert(applicationUser);
+        await fakeRepository.Save();
+
+        // When
+        IList<IApplicationUser> lifeAssistants = await application.GetLifeAssistants();
+        
+        // Then
+        lifeAssistants.Count.Should().Be(1);
+        lifeAssistants.First().Id.Should().Be(applicationUser.Id);
+    }
+    
+    [Fact]
+    public async Task GetLifeAssistants_DoNoReturnAgencyEmployees()
+    {
+        // Given
+        var fakeRepository = new FakeApplicationUserRepository();
+        var application = new UsersApplication(fakeRepository, null);
+        
+        var assistant = this.dataFactory.CreateLifeAssistant();
+        var employee = this.dataFactory.CreateAgencyEmployee();
+        await fakeRepository.Insert(assistant);
+        await fakeRepository.Insert(employee);
+        await fakeRepository.Save();
+
+        // When
+        IList<IApplicationUser> lifeAssistants = await application.GetLifeAssistants();
+        
+        // Then
+        lifeAssistants.Count.Should().Be(1);
+        lifeAssistants.First().Id.Should().Be(assistant.Id);
     }
 }

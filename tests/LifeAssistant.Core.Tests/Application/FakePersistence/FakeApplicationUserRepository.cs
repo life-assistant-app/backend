@@ -28,6 +28,18 @@ public class FakeApplicationUserRepository : IApplicationUserRepository
         return this.Data.First(user => user.Id == entityId);
     }
 
+    public Task<IList<IApplicationUser>> FindValidatedByRole(ApplicationUserRole role)
+    {
+        IList<IApplicationUser> applicationUserWithAppointmentsList = this
+            .Data
+            .Where(user => user.Role == role)
+            .Select(user => user as IApplicationUser)
+            .ToList();
+        
+        return Task.FromResult(applicationUserWithAppointmentsList);
+    }
+
+
     public Task Save()
     {
         this.Data = newData.ToList();

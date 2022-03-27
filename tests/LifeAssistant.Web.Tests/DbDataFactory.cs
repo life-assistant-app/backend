@@ -16,7 +16,7 @@ public class DbDataFactory
         this.context = context;
     }
 
-    public async Task<ApplicationUserEntity> InsertValidatedAgencyEmployeeEntity()
+    public async Task<ApplicationUserEntity> InsertValidatedAgencyEmployee()
     {
         ApplicationUserEntity agencyEmployee = new ApplicationUserEntity
         {
@@ -36,7 +36,13 @@ public class DbDataFactory
 
     public async Task<ApplicationUserEntity> InsertValidatedLifeAssistant()
     {
+        return await InsertLifeAssistant(true);
+    }
+
+    public async Task<ApplicationUserEntity> InsertLifeAssistant(bool validated)
+    {
         var agencyEmployee = CreateApplicationUserEntity();
+        agencyEmployee.Validated = validated;
         await this.context.Users.AddAsync(agencyEmployee);
         await this.context.SaveChangesAsync();
 

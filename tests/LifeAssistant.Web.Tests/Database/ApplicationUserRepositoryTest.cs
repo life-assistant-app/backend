@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -19,7 +20,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
     public async Task FindByUsername_WithExistingUserName_ReturnsUserRecord()
     {
         // Given
-        ApplicationUserEntity entity = await this.dbDataFactory.InsertValidatedAgencyEmployeeEntity();
+        ApplicationUserEntity entity = await this.dbDataFactory.InsertValidatedAgencyEmployee();
         var repository = new ApplicationUserRepository(this.context, factory);
 
         // When
@@ -39,7 +40,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
     {
         // Given
         ApplicationUserEntity entity = await this.dbDataFactory
-            .InsertValidatedAgencyEmployeeEntity();
+            .InsertValidatedAgencyEmployee();
         var repository = new ApplicationUserRepository(this.context, factory);
 
         // When
@@ -58,7 +59,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
     public async Task Update_UpdatesRecordInDb()
     {
         // Given
-        ApplicationUserEntity entity = await this.dbDataFactory.InsertValidatedAgencyEmployeeEntity();
+        ApplicationUserEntity entity = await this.dbDataFactory.InsertValidatedAgencyEmployee();
         var repository = new ApplicationUserRepository(this.context, factory);
         entity.FirstName = "Updated";
         entity.Appointments.Add(new AppointmentEntity()
@@ -132,5 +133,55 @@ public class ApplicationUserRepositoryTest : DatabaseTest
         result.Role.Should().Be(user.Role);
         result.Validated.Should().Be(user.Validated);
         result.Appointments.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetApplicationUserByRole_Employee_ReturnsOnlyEmployeeRecord()
+    {
+        // Given
+        await this.dbDataFactory.InsertValidatedLifeAssistant();
+        ApplicationUserEntity employee = await this.dbDataFactory.InsertValidatedAgencyEmployee();
+
+        var repository = new ApplicationUserRepository(this.context, new AppointmentStateFactory());
+
+        // When
+        IList<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.AgencyEmployee);
+        
+        // Then
+        result.Count.Should().Be(1);
+        result.First().Id.Should().Be(employee.Id);
+    }
+    
+    [Fact]
+    public async Task GetApplicationUserByRole_Assistant_ReturnsOnlyAssistantRecord()
+    {
+        // Given
+        ApplicationUserEntity assistant = await this.dbDataFactory.InsertValidatedLifeAssistant();
+        await this.dbDataFactory.InsertValidatedAgencyEmployee();
+
+        var repository = new ApplicationUserRepository(this.context, new AppointmentStateFactory());
+
+        // When
+        IList<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.LifeAssistant);
+        
+        // Then
+        result.Count.Should().Be(1);
+        result.First().Id.Should().Be(assistant.Id);
+    }
+    
+        [Fact]
+    public async Task GetApplicationUserByRole_UnvalidatedUser_DoNotReturnUnvalidatedUser()
+    {
+        // Given
+        ApplicationUserEntity assistant = await this.dbDataFactory.InsertLifeAssistant(false);
+        await this.dbDataFactory.InsertValidatedAgencyEmployee();
+
+        var repository = new ApplicationUserRepository(this.context, new AppointmentStateFactory());
+
+        // When
+        IList<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.LifeAssistant);
+        
+        // Then
+        result.Count.Should().Be(0);
     }
 }

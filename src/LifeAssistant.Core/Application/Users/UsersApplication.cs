@@ -60,6 +60,11 @@ public class UsersApplication
         return new LoginResponse(tokenHandler.WriteToken(token));
     }
 
+    public async Task<IList<IApplicationUser>> GetLifeAssistants()
+    {
+        return await this.applicationUserRepository
+            .FindValidatedByRole(ApplicationUserRole.LifeAssistant);
+    }
 
     private SecurityTokenDescriptor BuildTokenDescriptor(IApplicationUser applicationUser)
     {

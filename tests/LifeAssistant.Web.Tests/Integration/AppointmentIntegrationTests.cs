@@ -22,7 +22,7 @@ public class AppointmentIntegrationTests : IntegrationTests
     public async Task CreateAppointment_Returns201AndInsertsRecordInDb()
     {
         // Given
-        ApplicationUserEntity agencyEmployee = await this.dbDataFactory.InsertValidatedAgencyEmployeeEntity();
+        ApplicationUserEntity agencyEmployee = await this.dbDataFactory.InsertValidatedAgencyEmployee();
         ApplicationUserEntity lifeAssistant = await this.dbDataFactory.InsertValidatedLifeAssistant();
         await Login(agencyEmployee.UserName, this.dbDataFactory.UserPassword);
         var request = new CreateAppointmentRequest(DateTime.Now.AddDays(1));
@@ -40,7 +40,7 @@ public class AppointmentIntegrationTests : IntegrationTests
     public async Task GetsAppointment_ReturnsAppointments()
     {
         // Given
-        ApplicationUserEntity agencyEmployee = await this.dbDataFactory.InsertValidatedAgencyEmployeeEntity();
+        ApplicationUserEntity agencyEmployee = await this.dbDataFactory.InsertValidatedAgencyEmployee();
         ApplicationUserEntity lifeAssistant = await this.dbDataFactory.InsertValidatedLifeAssistantWithAppointments();
 
         await Login(agencyEmployee.UserName, this.dbDataFactory.UserPassword);
