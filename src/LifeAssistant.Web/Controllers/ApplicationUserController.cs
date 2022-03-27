@@ -15,6 +15,10 @@ public class ApplicationUserController : ControllerBase
         this.usersApplication = usersApplication;
     }
 
+    /// <summary>
+    /// Get the list of life assistants
+    /// </summary>
+    /// <returns>The profile of all validated life assistants</returns>
     [HttpGet("assistants")]
     public async Task<ActionResult<IList<GetUserResponse>>> GetLifeAssistants()
     {
