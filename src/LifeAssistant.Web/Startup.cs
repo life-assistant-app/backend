@@ -32,7 +32,7 @@ public class Startup
         ConfigureAuth(services);
         ConfigureDi(services);
 
-        services.AddControllers();
+        services.AddControllers(options => options.Filters.Add(typeof(ExceptionsFilter)));
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(ConfigureSwagger);
     }
@@ -94,7 +94,7 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 
 

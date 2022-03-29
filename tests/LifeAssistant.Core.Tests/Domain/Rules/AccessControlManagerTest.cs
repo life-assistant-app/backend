@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.ApplicationUser;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Tests.Application.FakePersistence;
 using LifeAssistant.Web.Tests;
@@ -46,6 +48,6 @@ public class AccessControlManagerTest
         Func<Task> act = async () => await accessControlManager.EnsureUserCanCreateAppointment();
 
         // Then
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().ThrowAsync<IllegalAccessException>();
     }
 }

@@ -81,6 +81,6 @@ public class AuthenticationIntegrationTests : IntegrationTests
         var response = await this.client.PostAsJsonAsync("/api/auth/login", request);
 
         // Then
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

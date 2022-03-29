@@ -9,6 +9,7 @@ using FluentAssertions;
 using LifeAssistant.Core.Application.Users;
 using LifeAssistant.Core.Application.Users.Contracts;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.ApplicationUser;
 using LifeAssistant.Core.Tests.Application.FakePersistence;
 using LifeAssistant.Web.Tests;
 using Microsoft.IdentityModel.Tokens;
@@ -157,7 +158,7 @@ public class UsersApplicationTests
         await fakeRepository.Save();
 
         // When
-        List<IApplicationUser> lifeAssistants = await application.GetLifeAssistants();
+        List<GetUserResponse> lifeAssistants = await application.GetLifeAssistants();
         
         // Then
         lifeAssistants.Count.Should().Be(1);
@@ -178,7 +179,7 @@ public class UsersApplicationTests
         await fakeRepository.Save();
 
         // When
-        List<IApplicationUser> lifeAssistants = await application.GetLifeAssistants();
+        List<GetUserResponse> lifeAssistants = await application.GetLifeAssistants();
         
         // Then
         lifeAssistants.Count.Should().Be(1);

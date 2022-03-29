@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.ApplicationUser;
+using LifeAssistant.Core.Domain.Exceptions;
 using Xunit;
 
 namespace LifeAssistant.Core.Tests.Domain.Entities;
@@ -23,7 +25,7 @@ public class ApplicationUserTests
         );
 
         // Then
-        action.Should().Throw<ArgumentException>();
+        action.Should().Throw<EntityStateException>();
     }
 
     [Theory]
@@ -41,7 +43,7 @@ public class ApplicationUserTests
         );
 
         // Then
-        action.Should().Throw<ArgumentException>();
+        action.Should().Throw<EntityStateException>();
     }
 
     [Theory]
@@ -59,7 +61,7 @@ public class ApplicationUserTests
         );
 
         // Then
-        action.Should().Throw<ArgumentException>();
+        action.Should().Throw<EntityStateException>();
     }
 
     [Theory]
@@ -77,7 +79,7 @@ public class ApplicationUserTests
         );
 
         // Then
-        action.Should().Throw<ArgumentException>();
+        action.Should().Throw<EntityStateException>();
     }
 
     [Fact]

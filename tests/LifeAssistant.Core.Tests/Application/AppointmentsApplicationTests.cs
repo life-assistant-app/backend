@@ -6,6 +6,7 @@ using FluentAssertions;
 using LifeAssistant.Core.Application.Appointments;
 using LifeAssistant.Core.Application.Appointments.Contracts;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.ApplicationUser;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Tests.Application.FakePersistence;
 using LifeAssistant.Web.Tests;

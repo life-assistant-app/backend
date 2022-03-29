@@ -1,4 +1,5 @@
 ﻿using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +19,16 @@ public class ApplicationUserRepository : IApplicationUserRepository
 
     public async Task<IApplicationUser> FindByUsername(string username)
     {
-        ApplicationUserEntity entity = await this.context
+        ApplicationUserEntity? applicationUserEntity = await this.context
             .Users
-            .FirstAsync(user => user.UserName == username);
+            .FirstOrDefaultAsync(user => user.UserName == username);
 
-        return entity.ToDomainEntity(appointmentStateFactory);
+        if (applicationUserEntity is null)
+        {
+            throw new EntityNotFoundException($"No user with username : {username}");
+        }
+        
+        return applicationUserEntity.ToDomainEntity(appointmentStateFactory);
     }
 
     public async Task<IApplicationUserWithAppointments> FindByIdWithAppointments(Guid entityId)
@@ -61,10 +67,17 @@ public class ApplicationUserRepository : IApplicationUserRepository
 
     private async Task<ApplicationUserEntity> FindEntityById(Guid entityId)
     {
-        return await this.context
+        ApplicationUserEntity? applicationUserEntity = await this.context
             .Users
             .Include(user => user.Appointments)
-            .FirstAsync(user => user.Id == entityId);
+            .FirstOrDefaultAsync(user => user.Id == entityId);
+        
+        if (applicationUserEntity is null)
+        {
+            throw new EntityNotFoundException($"No user with id : {entityId}");
+        }
+        
+        return applicationUserEntity;
     }
 
 
@@ -91,8 +104,14 @@ public class ApplicationUserRepository : IApplicationUserRepository
 
     public async Task<IApplicationUser> FindById(Guid entityId)
     {
-        ApplicationUserEntity applicationUserEntity = await this.context.Users
-            .FirstAsync(u => u.Id == entityId);
+        ApplicationUserEntity? applicationUserEntity = await this.context.Users
+            .FirstOrDefaultAsync(u => u.Id == entityId);
+
+        if (applicationUserEntity is null)
+        {
+            throw new EntityNotFoundException($"No user with id : {entityId}");
+        }
+        
         return applicationUserEntity.ToDomainEntity(this.appointmentStateFactory);
     }
 

@@ -16,6 +16,10 @@ public class AppointmentController : ControllerBase
         this.application = application;
     }
 
+    /// <summary>
+    /// Get the list of existing appointments
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("appointments")]
     public async Task<ActionResult<List<GetAppointmentResponse>>> GetAppointments()
     {
