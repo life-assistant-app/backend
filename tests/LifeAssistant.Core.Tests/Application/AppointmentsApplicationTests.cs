@@ -34,7 +34,7 @@ public class AppointmentsApplicationTests
         await fakeUserRepository.Save();
 
         var accessControlManager = new AccessControlManager(agencyEmployee.Id, fakeUserRepository);
-        var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager, null);
+        var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager);
 
         // When
         GetAppointmentResponse appointment =
@@ -71,7 +71,7 @@ public class AppointmentsApplicationTests
         await fakeUserRepository.Save();
 
         var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeUserRepository);
-        var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager, null);
+        var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager);
 
         // When
         Func<Task> act = async () => await appointmentApplication.CreateAppointment(lifeAssistant.Id, appointmentDate);
@@ -85,28 +85,26 @@ public class AppointmentsApplicationTests
     {
         // Given
         ApplicationUser lifeAssistant = dataFactory.CreateLifeAssistant();
+        
+        DateTime dateTime1 = DateTime.Now.AddDays(1);
+        DateTime dateTime2 = dateTime1.AddDays(1);
+        DateTime dateTime3 = dateTime2.AddDays(1);
+        lifeAssistant.Appointments = new List<Appointment>
+        {
+            new(dateTime1),
+            new(dateTime2),
+            new(dateTime3),
+        };
 
         var fakeUserRepository = new FakeApplicationUserRepository();
         await fakeUserRepository.Insert(lifeAssistant);
         await fakeUserRepository.Save();
 
-        var dateTime1 = DateTime.Now.AddDays(1);
-        var dateTime2 = dateTime1.AddDays(1);
-        var dateTime3 = dateTime2.AddDays(1);
-        var fakeAppointmentRepository = new FakeAppointmentRepository(
-            new List<Appointment>
-            {
-                new (dateTime1),
-                new (dateTime2),
-                new (dateTime3),
-            }
-        );
-
         var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeUserRepository);
-        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, fakeAppointmentRepository);
+        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager);
         
         // When
-        IList<GetAppointmentResponse> result = await application.GetAppointments();
+        List<GetAppointmentResponse> result = await application.GetAppointments();
         
         // Then
         result.Count.Should().Be(3);

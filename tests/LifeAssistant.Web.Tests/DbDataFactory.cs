@@ -66,7 +66,13 @@ public class DbDataFactory
 
     public async Task<ApplicationUserEntity> InsertValidatedLifeAssistantWithAppointments()
     {
+        return await InsertLifeAssistantWithAppointments(true);
+    }
+    
+    public async Task<ApplicationUserEntity> InsertLifeAssistantWithAppointments(bool validated)
+    {
         var lifeAssistant = CreateApplicationUserEntity();
+        lifeAssistant.Validated = validated;
         lifeAssistant.Appointments.Add(new AppointmentEntity()
         {
             DateTime = DateTime.Now.AddDays(1),

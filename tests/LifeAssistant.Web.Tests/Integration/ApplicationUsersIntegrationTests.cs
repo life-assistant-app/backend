@@ -32,7 +32,7 @@ public class ApplicationUsersIntegrationTests : IntegrationTests
         
         // Then
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        IList<GetUserResponse> data = await response.Content.ReadFromJsonAsync<IList<GetUserResponse>>();
+        List<GetUserResponse> data = await response.Content.ReadFromJsonAsync<List<GetUserResponse>>();
 
         data.Count.Should().Be(1);
         data.First().Id.Should().Be(assistant.Id);

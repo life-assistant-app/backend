@@ -1,3 +1,3 @@
 ﻿namespace LifeAssistant.Core.Application.Appointments.Contracts;
 
-public record GetAppointmentResponse(Guid Id, string State, DateTime DateTime);
+public record GetAppointmentResponse(Guid Id, string State, DateTime DateTime, Guid lifeAssistantId);

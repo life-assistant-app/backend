@@ -157,7 +157,7 @@ public class UsersApplicationTests
         await fakeRepository.Save();
 
         // When
-        IList<IApplicationUser> lifeAssistants = await application.GetLifeAssistants();
+        List<IApplicationUser> lifeAssistants = await application.GetLifeAssistants();
         
         // Then
         lifeAssistants.Count.Should().Be(1);
@@ -178,7 +178,7 @@ public class UsersApplicationTests
         await fakeRepository.Save();
 
         // When
-        IList<IApplicationUser> lifeAssistants = await application.GetLifeAssistants();
+        List<IApplicationUser> lifeAssistants = await application.GetLifeAssistants();
         
         // Then
         lifeAssistants.Count.Should().Be(1);

@@ -20,7 +20,7 @@ public class ApplicationUserController : ControllerBase
     /// </summary>
     /// <returns>The profile of all validated life assistants</returns>
     [HttpGet("assistants")]
-    public async Task<ActionResult<IList<GetUserResponse>>> GetLifeAssistants()
+    public async Task<ActionResult<List<GetUserResponse>>> GetLifeAssistants()
     {
         return Ok(await usersApplication.GetLifeAssistants());
     }

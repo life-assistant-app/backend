@@ -17,7 +17,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet("appointments")]
-    public async Task<ActionResult<IList<GetAppointmentResponse>>> GetAppointments()
+    public async Task<ActionResult<List<GetAppointmentResponse>>> GetAppointments()
     {
         return Ok(await this.application.GetAppointments());
     }

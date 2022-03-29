@@ -60,7 +60,7 @@ public class UsersApplication
         return new LoginResponse(tokenHandler.WriteToken(token));
     }
 
-    public async Task<IList<IApplicationUser>> GetLifeAssistants()
+    public async Task<List<IApplicationUser>> GetLifeAssistants()
     {
         return await this.applicationUserRepository
             .FindValidatedByRole(ApplicationUserRole.LifeAssistant);

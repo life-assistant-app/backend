@@ -11,5 +11,6 @@ public interface IApplicationUserRepository
     Task<IApplicationUser> FindByUsername(string username);
 
     Task<IApplicationUserWithAppointments> FindByIdWithAppointments(Guid entityId);
-    Task<IList<IApplicationUser>> FindValidatedByRole(ApplicationUserRole role);
+    Task<List<IApplicationUser>> FindValidatedByRole(ApplicationUserRole role);
+    Task<List<IApplicationUserWithAppointments>> FindValidatedWithAppointmentByRole(ApplicationUserRole role);
 }

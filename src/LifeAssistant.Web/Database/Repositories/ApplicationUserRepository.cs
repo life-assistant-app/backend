@@ -32,7 +32,7 @@ public class ApplicationUserRepository : IApplicationUserRepository
         return entity.ToDomainEntity(appointmentStateFactory);
     }
 
-    public async Task<IList<IApplicationUser>> FindValidatedByRole(ApplicationUserRole role)
+    public async Task<List<IApplicationUser>> FindValidatedByRole(ApplicationUserRole role)
     {
         List<ApplicationUserEntity> applicationUserEntities = await this.context
             .Users
@@ -42,6 +42,20 @@ public class ApplicationUserRepository : IApplicationUserRepository
         
         return applicationUserEntities
             .Select(entity => entity.ToDomainEntity(this.appointmentStateFactory) as IApplicationUser)
+            .ToList();
+    }
+
+    public async Task<List<IApplicationUserWithAppointments>> FindValidatedWithAppointmentByRole(ApplicationUserRole role)
+    {
+        List<ApplicationUserEntity> applicationUserEntities = await this.context
+            .Users
+            .Include(user => user.Appointments)
+            .Where(user => user.Role == role)
+            .Where(user => user.Validated)
+            .ToListAsync();
+        
+        return applicationUserEntities
+            .Select(entity => entity.ToDomainEntity(this.appointmentStateFactory) as IApplicationUserWithAppointments)
             .ToList();
     }
 
