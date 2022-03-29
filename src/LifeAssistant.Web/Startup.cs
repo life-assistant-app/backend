@@ -9,6 +9,7 @@ using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database;
 using LifeAssistant.Web.Database.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -41,6 +42,10 @@ public class Startup
             options.ClearProviders();
             options.AddConsole();
             options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
+        });
+        services.AddW3CLogging(w3cLogging =>
+        {
+            w3cLogging.LoggingFields = W3CLoggingFields.All;
         });
     }
 
