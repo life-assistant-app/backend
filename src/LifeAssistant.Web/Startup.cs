@@ -9,7 +9,9 @@ using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database;
 using LifeAssistant.Web.Database.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -33,7 +35,14 @@ public class Startup
         ConfigureAuth(services);
         ConfigureDi(services);
 
-        services.AddControllers(options => options.Filters.Add(typeof(ExceptionsFilter)));
+        services.AddControllers(options =>
+        {
+            options.Filters.Add(typeof(ExceptionsFilter));
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            options.Filters.Add(new AuthorizeFilter(policy));
+        });
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(ConfigureSwagger);
         
