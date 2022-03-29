@@ -35,6 +35,13 @@ public class Startup
         services.AddControllers(options => options.Filters.Add(typeof(ExceptionsFilter)));
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(ConfigureSwagger);
+        
+        services.AddLogging(options =>
+        {
+            options.ClearProviders();
+            options.AddConsole();
+            options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
+        });
     }
 
     private void ConfigureDi(IServiceCollection services)
@@ -56,6 +63,7 @@ public class Startup
 
             return new AccessControlManager(currentUserId, servicesProviders.GetService<IApplicationUserRepository>());
         });
+        
     }
 
     private void ConfigureDbContext(IServiceCollection services)
@@ -83,6 +91,7 @@ public class Startup
         app.UseSwagger();
         app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"); });
 
+        app.UseW3CLogging();
         app.UseRouting();
         app.UseCors(cors =>
         {
