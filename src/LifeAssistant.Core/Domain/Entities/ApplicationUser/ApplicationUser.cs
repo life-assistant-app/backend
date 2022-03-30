@@ -1,4 +1,6 @@
-﻿namespace LifeAssistant.Core.Domain.Entities;
+﻿using LifeAssistant.Core.Domain.Exceptions;
+
+namespace LifeAssistant.Core.Domain.Entities.ApplicationUser;
 
 public class ApplicationUser : Entity, IApplicationUserWithAppointments
 {
@@ -7,7 +9,7 @@ public class ApplicationUser : Entity, IApplicationUserWithAppointments
     public string UserName
     {
         get => userName;
-        private set => userName = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
+        private set => userName = string.IsNullOrEmpty(value) ? throw new EntityStateException("User name can't be null nor empty") : value;
     }
 
     private string password;
@@ -15,7 +17,7 @@ public class ApplicationUser : Entity, IApplicationUserWithAppointments
     public string Password
     {
         get => password;
-        private set => password = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
+        private set => password = string.IsNullOrEmpty(value) ? throw new EntityStateException("User password can't be null nor empty") : value;
     }
 
     private string firstName;
@@ -23,7 +25,7 @@ public class ApplicationUser : Entity, IApplicationUserWithAppointments
     public string FirstName
     {
         get => firstName;
-        private set => firstName = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
+        private set => firstName = string.IsNullOrEmpty(value) ? throw new EntityStateException("User firstname can't be null nor empty") : value;
     }
 
     private string lastName;
@@ -31,7 +33,7 @@ public class ApplicationUser : Entity, IApplicationUserWithAppointments
     public string LastName
     {
         get => lastName;
-        private set => lastName = string.IsNullOrEmpty(value) ? throw new ArgumentException() : value;
+        private set => lastName = string.IsNullOrEmpty(value) ? throw new EntityStateException("User lastname can't be null nor empty") : value;
     }
 
     public ApplicationUserRole Role { get; }

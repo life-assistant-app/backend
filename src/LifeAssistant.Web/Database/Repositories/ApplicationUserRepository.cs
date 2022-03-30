@@ -1,4 +1,5 @@
 ﻿using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +19,16 @@ public class ApplicationUserRepository : IApplicationUserRepository
 
     public async Task<IApplicationUser> FindByUsername(string username)
     {
-        ApplicationUserEntity entity = await this.context
+        ApplicationUserEntity? applicationUserEntity = await this.context
             .Users
-            .FirstAsync(user => user.UserName == username);
+            .FirstOrDefaultAsync(user => user.UserName == username);
 
-        return entity.ToDomainEntity(appointmentStateFactory);
+        if (applicationUserEntity is null)
+        {
+            throw new EntityNotFoundException($"No user with username : {username}");
+        }
+        
+        return applicationUserEntity.ToDomainEntity(appointmentStateFactory);
     }
 
     public async Task<IApplicationUserWithAppointments> FindByIdWithAppointments(Guid entityId)
@@ -32,7 +38,7 @@ public class ApplicationUserRepository : IApplicationUserRepository
         return entity.ToDomainEntity(appointmentStateFactory);
     }
 
-    public async Task<IList<IApplicationUser>> FindValidatedByRole(ApplicationUserRole role)
+    public async Task<List<IApplicationUser>> FindValidatedByRole(ApplicationUserRole role)
     {
         List<ApplicationUserEntity> applicationUserEntities = await this.context
             .Users
@@ -45,12 +51,33 @@ public class ApplicationUserRepository : IApplicationUserRepository
             .ToList();
     }
 
-    private async Task<ApplicationUserEntity> FindEntityById(Guid entityId)
+    public async Task<List<IApplicationUserWithAppointments>> FindValidatedWithAppointmentByRole(ApplicationUserRole role)
     {
-        return await this.context
+        List<ApplicationUserEntity> applicationUserEntities = await this.context
             .Users
             .Include(user => user.Appointments)
-            .FirstAsync(user => user.Id == entityId);
+            .Where(user => user.Role == role)
+            .Where(user => user.Validated)
+            .ToListAsync();
+        
+        return applicationUserEntities
+            .Select(entity => entity.ToDomainEntity(this.appointmentStateFactory) as IApplicationUserWithAppointments)
+            .ToList();
+    }
+
+    private async Task<ApplicationUserEntity> FindEntityById(Guid entityId)
+    {
+        ApplicationUserEntity? applicationUserEntity = await this.context
+            .Users
+            .Include(user => user.Appointments)
+            .FirstOrDefaultAsync(user => user.Id == entityId);
+        
+        if (applicationUserEntity is null)
+        {
+            throw new EntityNotFoundException($"No user with id : {entityId}");
+        }
+        
+        return applicationUserEntity;
     }
 
 
@@ -77,8 +104,14 @@ public class ApplicationUserRepository : IApplicationUserRepository
 
     public async Task<IApplicationUser> FindById(Guid entityId)
     {
-        ApplicationUserEntity applicationUserEntity = await this.context.Users
-            .FirstAsync(u => u.Id == entityId);
+        ApplicationUserEntity? applicationUserEntity = await this.context.Users
+            .FirstOrDefaultAsync(u => u.Id == entityId);
+
+        if (applicationUserEntity is null)
+        {
+            throw new EntityNotFoundException($"No user with id : {entityId}");
+        }
+        
         return applicationUserEntity.ToDomainEntity(this.appointmentStateFactory);
     }
 

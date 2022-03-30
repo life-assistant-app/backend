@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.ApplicationUser;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Web.Database.Entities;
 using LifeAssistant.Web.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,47 @@ public class ApplicationUserRepositoryTest : DatabaseTest
 {
     private AppointmentStateFactory factory = new AppointmentStateFactory();
 
+    [Fact]
+    public async Task FindById_NoCorrespondingRecord_Throws()
+    {
+        // Given
+        var repository = new ApplicationUserRepository(this.context, factory);
+        
+        // When
+        Func<Task<IApplicationUser>> act = async () => await repository.FindById(Guid.NewGuid());
+        
+        // Then
+        await act.Should().ThrowAsync<EntityNotFoundException>();
+    }
+    
+    
+    [Fact]
+    public async Task FindByUsername_NoCorrespondingRecord_Throws()
+    {
+        // Given
+        var repository = new ApplicationUserRepository(this.context, factory);
+        
+        // When
+        Func<Task<IApplicationUser>> act = async () => await repository.FindByUsername("test");
+        
+        // Then
+        await act.Should().ThrowAsync<EntityNotFoundException>();
+    }
+    
+        
+    [Fact]
+    public async Task FindByIdWithAppointments_NoCorrespondingRecord_Throws()
+    {
+        // Given
+        var repository = new ApplicationUserRepository(this.context, factory);
+        
+        // When
+        Func<Task<IApplicationUserWithAppointments>> act = async () => await repository.FindByIdWithAppointments(Guid.NewGuid());
+        
+        // Then
+        await act.Should().ThrowAsync<EntityNotFoundException>();
+    }
+    
     [Fact]
     public async Task FindByUsername_WithExistingUserName_ReturnsUserRecord()
     {
@@ -145,7 +188,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
         var repository = new ApplicationUserRepository(this.context, new AppointmentStateFactory());
 
         // When
-        IList<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.AgencyEmployee);
+        List<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.AgencyEmployee);
         
         // Then
         result.Count.Should().Be(1);
@@ -153,7 +196,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
     }
     
     [Fact]
-    public async Task GetApplicationUserByRole_Assistant_ReturnsOnlyAssistantRecord()
+    public async Task FindValidatedByRole_Assistant_ReturnsOnlyAssistantRecord()
     {
         // Given
         ApplicationUserEntity assistant = await this.dbDataFactory.InsertValidatedLifeAssistant();
@@ -162,7 +205,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
         var repository = new ApplicationUserRepository(this.context, new AppointmentStateFactory());
 
         // When
-        IList<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.LifeAssistant);
+        List<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.LifeAssistant);
         
         // Then
         result.Count.Should().Be(1);
@@ -170,7 +213,7 @@ public class ApplicationUserRepositoryTest : DatabaseTest
     }
     
         [Fact]
-    public async Task GetApplicationUserByRole_UnvalidatedUser_DoNotReturnUnvalidatedUser()
+    public async Task FindValidatedByRole_UnvalidatedUser_DoNotReturnUnvalidatedUser()
     {
         // Given
         ApplicationUserEntity assistant = await this.dbDataFactory.InsertLifeAssistant(false);
@@ -179,7 +222,41 @@ public class ApplicationUserRepositoryTest : DatabaseTest
         var repository = new ApplicationUserRepository(this.context, new AppointmentStateFactory());
 
         // When
-        IList<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.LifeAssistant);
+        List<IApplicationUserWithAppointments> result = await repository.FindValidatedWithAppointmentByRole(ApplicationUserRole.LifeAssistant);
+        
+        // Then
+        result.Count.Should().Be(0);
+    }
+    
+    [Fact]
+    public async Task FindValidatedWithAppointmentByRole_Assistant_ReturnsOnlyAssistantRecord()
+    {
+        // Given
+        ApplicationUserEntity assistant = await this.dbDataFactory.InsertValidatedLifeAssistantWithAppointments();
+        await this.dbDataFactory.InsertValidatedAgencyEmployee();
+
+        var repository = new ApplicationUserRepository(this.context, new AppointmentStateFactory());
+
+        // When
+        List<IApplicationUserWithAppointments> result = await repository.FindValidatedWithAppointmentByRole(ApplicationUserRole.LifeAssistant);
+        
+        // Then
+        result.Count.Should().Be(1);
+        result.First().Id.Should().Be(assistant.Id);
+        result.First().Appointments.Count.Should().Be(1);
+    }
+    
+    [Fact]
+    public async Task FindValidatedWithAppointmentByRole_UnvalidatedUser_DoNotReturnUnvalidatedUser()
+    {
+        // Given
+        ApplicationUserEntity assistant = await this.dbDataFactory.InsertLifeAssistantWithAppointments(false);
+        await this.dbDataFactory.InsertValidatedAgencyEmployee();
+
+        var repository = new ApplicationUserRepository(this.context, new AppointmentStateFactory());
+
+        // When
+        List<IApplicationUser> result = await repository.FindValidatedByRole(ApplicationUserRole.LifeAssistant);
         
         // Then
         result.Count.Should().Be(0);

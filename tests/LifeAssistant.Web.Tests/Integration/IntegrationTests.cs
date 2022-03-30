@@ -21,11 +21,12 @@ public class IntegrationTests : WebTests, IClassFixture<WebApplicationFactory<St
     protected readonly ApplicationDbContext givenDbContext;
     protected readonly ApplicationDbContext assertDbContext;
     protected readonly DbDataFactory dbDataFactory;
+    protected readonly IConfiguration configuration;
 
     public IntegrationTests(WebApplicationFactory<Startup> factory)
     {
         this.client = factory.CreateClient();
-        IConfiguration configuration = factory.Services.GetService<IConfiguration>() ??
+        configuration = factory.Services.GetService<IConfiguration>() ??
                                        throw new InvalidOperationException("Can't get Configuration from DI");
 
         givenDbContext = new ApplicationDbContext(GetOptionsForOtherDbContext(configuration));

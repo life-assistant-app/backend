@@ -1,4 +1,5 @@
 ﻿using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.ApplicationUser;
 
 namespace LifeAssistant.Web.Tests;
 

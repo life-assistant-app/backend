@@ -1,4 +1,5 @@
 ﻿using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Persistence;
 
 namespace LifeAssistant.Core.Domain.Rules;
@@ -22,7 +23,7 @@ public class AccessControlManager
         IApplicationUser user = await GetCurrentUser();
         if (user.Role is not ApplicationUserRole.AgencyEmployee)
         {
-            throw new InvalidOperationException("Only Agency Employees can create Appointments");
+            throw new IllegalAccessException("Only Agency Employees can create Appointments");
         }
     }
 

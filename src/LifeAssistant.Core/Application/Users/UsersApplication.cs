@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using LifeAssistant.Core.Application.Users.Contracts;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.ApplicationUser;
 using LifeAssistant.Core.Persistence;
 using Microsoft.IdentityModel.Tokens;
 
@@ -60,10 +61,13 @@ public class UsersApplication
         return new LoginResponse(tokenHandler.WriteToken(token));
     }
 
-    public async Task<IList<IApplicationUser>> GetLifeAssistants()
+    public async Task<List<GetUserResponse>> GetLifeAssistants()
     {
-        return await this.applicationUserRepository
+        List<IApplicationUser> findValidatedByRole = await this.applicationUserRepository
             .FindValidatedByRole(ApplicationUserRole.LifeAssistant);
+        return findValidatedByRole
+            .Select(user => new GetUserResponse(user.Id, user.UserName, user.FirstName, user.LastName, user.Role))
+            .ToList();
     }
 
     private SecurityTokenDescriptor BuildTokenDescriptor(IApplicationUser applicationUser)

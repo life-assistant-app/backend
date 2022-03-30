@@ -2,6 +2,7 @@
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Web.Tests;
 using Xunit;
 
@@ -53,7 +54,7 @@ public class AppointmentTests
         Action act = () => appointment.State = new PendingAppointmentState();
 
         // Then
-        act.Should().Throw<InvalidOperationException>();
+        act.Should().Throw<EntityStateException>();
     }
 
     [Fact]
@@ -69,7 +70,7 @@ public class AppointmentTests
         Action act = () => appointment.State = new PendingAppointmentState();
 
         // Then
-        act.Should().Throw<InvalidOperationException>();
+        act.Should().Throw<EntityStateException>();
     }
 
     [Fact]
@@ -84,7 +85,7 @@ public class AppointmentTests
         ;
 
         // Then
-        act.Should().Throw<InvalidOperationException>();
+        act.Should().Throw<EntityStateException>();
     }
 
     [Fact]
@@ -97,7 +98,7 @@ public class AppointmentTests
         Action act = () => appointment.State = new FinishedAppointmentState();
 
         // Then
-        act.Should().Throw<InvalidOperationException>();
+        act.Should().Throw<EntityStateException>();
     }
 
     [Fact]
@@ -124,6 +125,6 @@ public class AppointmentTests
         Action act = () => new Appointment(dateTime);
 
         // Then
-        act.Should().Throw<ArgumentException>();
+        act.Should().Throw<EntityStateException>();
     }
 }

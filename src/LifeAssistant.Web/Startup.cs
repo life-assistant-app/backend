@@ -9,6 +9,9 @@ using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database;
 using LifeAssistant.Web.Database.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -32,9 +35,27 @@ public class Startup
         ConfigureAuth(services);
         ConfigureDi(services);
 
-        services.AddControllers();
+        services.AddControllers(options =>
+        {
+            options.Filters.Add(typeof(ExceptionsFilter));
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            options.Filters.Add(new AuthorizeFilter(policy));
+        });
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(ConfigureSwagger);
+        
+        services.AddLogging(options =>
+        {
+            options.ClearProviders();
+            options.AddConsole();
+            options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
+        });
+        services.AddW3CLogging(w3cLogging =>
+        {
+            w3cLogging.LoggingFields = W3CLoggingFields.All;
+        });
     }
 
     private void ConfigureDi(IServiceCollection services)
@@ -44,7 +65,6 @@ public class Startup
             new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
                 Configuration["JWT_SECRET"]));
         services.AddScoped<AppointmentsApplication>();
-        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         services.AddSingleton<IAppointmentStateFactory, AppointmentStateFactory>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped(servicesProviders =>
@@ -62,6 +82,7 @@ public class Startup
 
             return new AccessControlManager(currentUserId, servicesProviders.GetService<IApplicationUserRepository>());
         });
+        
     }
 
     private void ConfigureDbContext(IServiceCollection services)
@@ -89,6 +110,7 @@ public class Startup
         app.UseSwagger();
         app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"); });
 
+        app.UseW3CLogging();
         app.UseRouting();
         app.UseCors(cors =>
         {
@@ -100,7 +122,7 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 
 

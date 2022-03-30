@@ -16,8 +16,12 @@ public class AppointmentController : ControllerBase
         this.application = application;
     }
 
+    /// <summary>
+    /// Get the list of existing appointments
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("appointments")]
-    public async Task<ActionResult<IList<GetAppointmentResponse>>> GetAppointments()
+    public async Task<ActionResult<List<GetAppointmentResponse>>> GetAppointments()
     {
         return Ok(await this.application.GetAppointments());
     }

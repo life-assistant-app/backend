@@ -9,14 +9,12 @@ public class AppointmentsApplication
 {
     private readonly IApplicationUserRepository applicationUserRepository;
     private readonly AccessControlManager accessControlManager;
-    private readonly IAppointmentRepository appointmentRepository;
 
     public AppointmentsApplication(IApplicationUserRepository applicationUserRepository,
-        AccessControlManager accessControlManager, IAppointmentRepository appointmentRepository)
+        AccessControlManager accessControlManager)
     {
         this.applicationUserRepository = applicationUserRepository;
         this.accessControlManager = accessControlManager;
-        this.appointmentRepository = appointmentRepository;
     }
 
     public async Task<GetAppointmentResponse> CreateAppointment(Guid lifeAssistantId, DateTime dateTime)
@@ -33,15 +31,27 @@ public class AppointmentsApplication
 
         return new GetAppointmentResponse(appointment.Id,
             appointment.State.Name,
-            appointment.DateTime
+            appointment.DateTime,
+            lifeAssistant.Id
         );
     }
 
-    public async Task<IList<GetAppointmentResponse>> GetAppointments()
+    public async Task<List<GetAppointmentResponse>> GetAppointments()
     {
-        IList<Appointment> appointments = await this.appointmentRepository.GetAppointments();
-        return appointments
-            .Select(appointment => new GetAppointmentResponse(appointment.Id, appointment.State.Name, appointment.DateTime))
+        List<IApplicationUserWithAppointments> applicationUsers = await this.applicationUserRepository
+            .FindValidatedWithAppointmentByRole(ApplicationUserRole.LifeAssistant);
+        
+        return applicationUsers
+            .SelectMany(applicationUser => 
+                applicationUser
+                    .Appointments
+                    .Select(appointment => new GetAppointmentResponse(
+                        appointment.Id,
+                        appointment.State.Name,
+                        appointment.DateTime, 
+                        applicationUser.Id
+                    ))
+            )
             .ToList();
     }
 }
