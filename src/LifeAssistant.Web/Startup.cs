@@ -51,7 +51,12 @@ public class Startup
         {
             var httpContext = servicesProviders
                 .GetService<IHttpContextAccessor>()
-                .HttpContext;
+                .HttpContext ?? throw new InvalidOperationException("Not http context when configuring access control manager");
+
+            if (!httpContext.User.Claims.Any())
+            {
+                throw new InvalidOperationException();
+            }
 
             Guid currentUserId = Guid.Parse(httpContext.User.Claims.First().Value);
 
