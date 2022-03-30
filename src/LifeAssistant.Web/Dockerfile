@@ -14,4 +14,5 @@ RUN dotnet publish "src/LifeAssistant.Web/LifeAssistant.Web.csproj" -c Release -
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV Logging__Console__FormatterName=Simple
 ENTRYPOINT ["dotnet", "LifeAssistant.Web.dll"]
