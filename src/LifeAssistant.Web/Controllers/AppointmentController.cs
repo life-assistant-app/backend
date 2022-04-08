@@ -34,9 +34,22 @@ public class AppointmentController : ControllerBase
     /// <param name="request">Appointment creation payload</param>
     /// <returns>The resulting appointment</returns>
     [HttpPost("assistants/{id:guid}/appointments")]
-    public async Task<ActionResult<GetAppointmentResponse>> CreateAppointment(Guid id, [FromBody] CreateAppointmentRequest request)
+    public async Task<ActionResult<GetAppointmentResponse>> CreateAppointment(Guid id,
+        [FromBody] CreateAppointmentRequest request)
     {
         return Created("/api/assistants/{id:guid}/appointments",
             await application.CreateAppointment(id, request.DateTime));
+    }
+
+    /// <summary>
+    /// Sets the state of an existing appointment
+    /// Must be called by the life assistant who owns the appointment or an agency employee
+    /// </summary>
+    /// <returns>The updated appointment</returns>
+    [HttpPut("assistants/{lifeAssistantId:guid}/appointments/{appointmentId:guid}")]
+    public async Task<ActionResult<GetAppointmentResponse>> SetAppointmentState([FromBody] SetAppointStateRequest dto,
+        Guid lifeAssistantId, Guid appointmentId)
+    {
+        return Ok(await application.SetAppointmentState(lifeAssistantId, appointmentId, dto));
     }
 }

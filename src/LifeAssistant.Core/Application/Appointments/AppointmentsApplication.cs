@@ -1,5 +1,7 @@
 ﻿using LifeAssistant.Core.Application.Appointments.Contracts;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.ApplicationUser;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Persistence;
 
@@ -9,12 +11,41 @@ public class AppointmentsApplication
 {
     private readonly IApplicationUserRepository applicationUserRepository;
     private readonly AccessControlManager accessControlManager;
+    private readonly IAppointmentStateFactory appointmentStateFactory;
 
     public AppointmentsApplication(IApplicationUserRepository applicationUserRepository,
-        AccessControlManager accessControlManager)
+        AccessControlManager accessControlManager, IAppointmentStateFactory appointmentStateFactory)
     {
         this.applicationUserRepository = applicationUserRepository;
         this.accessControlManager = accessControlManager;
+        this.appointmentStateFactory = appointmentStateFactory;
+    }
+
+    public async Task<GetAppointmentResponse> SetAppointmentState(Guid lifeAssistantId, Guid appointmentId,
+        SetAppointStateRequest state)
+    {
+        await this.accessControlManager.EnsureUserCanUpdateAppointmentState(lifeAssistantId);
+        
+        IApplicationUserWithAppointments lifeAssistant = await this.applicationUserRepository
+            .FindByIdWithAppointments(lifeAssistantId);
+
+        Appointment appointmentToUpdate =
+            lifeAssistant.Appointments.FirstOrDefault(appointment => appointment.Id == appointmentId) ??
+            throw new EntityNotFoundException(
+                $"No appointment with id {appointmentId} for life assistant with id {lifeAssistantId}");
+
+        appointmentToUpdate.State =
+            this.appointmentStateFactory.BuildStateFromAppointment(appointmentToUpdate, state.StateName);
+
+        await this.applicationUserRepository.Update(lifeAssistant);
+        await this.applicationUserRepository.Save();
+        
+        return new GetAppointmentResponse(
+            appointmentToUpdate.Id,
+            appointmentToUpdate.State.Name,
+            appointmentToUpdate.DateTime,
+            lifeAssistantId
+        );
     }
 
     public async Task<GetAppointmentResponse> CreateAppointment(Guid lifeAssistantId, DateTime dateTime)
@@ -40,15 +71,15 @@ public class AppointmentsApplication
     {
         List<IApplicationUserWithAppointments> applicationUsers = await this.applicationUserRepository
             .FindValidatedWithAppointmentByRole(ApplicationUserRole.LifeAssistant);
-        
+
         return applicationUsers
-            .SelectMany(applicationUser => 
+            .SelectMany(applicationUser =>
                 applicationUser
                     .Appointments
                     .Select(appointment => new GetAppointmentResponse(
                         appointment.Id,
                         appointment.State.Name,
-                        appointment.DateTime, 
+                        appointment.DateTime,
                         applicationUser.Id
                     ))
             )

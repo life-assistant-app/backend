@@ -31,4 +31,13 @@ public class AccessControlManager
     {
         return this.currentUser ??= await userRepository.FindById(this.currentUserId);
     }
+
+    public async Task EnsureUserCanUpdateAppointmentState(Guid lifeAssistantId)
+    {
+        IApplicationUser user = await GetCurrentUser();
+        if (user.Role is not ApplicationUserRole.AgencyEmployee && user.Id != lifeAssistantId)
+        {
+            throw new IllegalAccessException("An appointment can only be modified by the owning life assistant or an agency employee");
+        }
+    }
 }

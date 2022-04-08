@@ -97,7 +97,6 @@ public class ApplicationUserRepository : IApplicationUserRepository
         user.LastName = entity.LastName;
         user.Role = entity.Role;
         user.Validated = entity.Validated;
-        user.Appointments = entity.Appointments.Select(appointment => new AppointmentEntity(appointment)).ToList();
 
         this.context.Update(user);
     }

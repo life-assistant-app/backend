@@ -124,6 +124,28 @@ public class ApplicationUserRepositoryTest : DatabaseTest
     }
 
     [Fact]
+    public async Task Update_ChildRecord_UpdatesChildRecordInDb()
+    {
+        // Given
+        ApplicationUserEntity entity = await this.dbDataFactory.InsertValidatedLifeAssistantWithAppointments();
+        var repository = new ApplicationUserRepository(this.context, factory);
+        int appointmentCount = entity.Appointments.Count;
+        entity.Appointments.First().State = "Pending Pickup";
+
+        // When
+        await repository.Update(entity.ToDomainEntity(new AppointmentStateFactory()));
+        await repository.Save();
+
+        // Then
+        entity = this.context
+            .Users
+            .Include(u => u.Appointments)
+            .First(item => item.Id == entity.Id);
+        entity.Appointments.First().State.Should().Be("Pending Pickup");
+        (await this.context.Appointments.CountAsync()).Should().Be(appointmentCount);
+    }
+    
+    [Fact]
     public async Task Insert_InsertsRecordInDb()
     {
         // Given

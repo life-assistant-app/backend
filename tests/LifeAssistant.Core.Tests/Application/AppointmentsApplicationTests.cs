@@ -7,6 +7,8 @@ using LifeAssistant.Core.Application.Appointments;
 using LifeAssistant.Core.Application.Appointments.Contracts;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.ApplicationUser;
+using LifeAssistant.Core.Domain.Entities.AppointmentState;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Tests.Application.FakePersistence;
 using LifeAssistant.Web.Tests;
@@ -35,7 +37,7 @@ public class AppointmentsApplicationTests
         await fakeUserRepository.Save();
 
         var accessControlManager = new AccessControlManager(agencyEmployee.Id, fakeUserRepository);
-        var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager);
+        var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
 
         // When
         GetAppointmentResponse appointment =
@@ -72,7 +74,7 @@ public class AppointmentsApplicationTests
         await fakeUserRepository.Save();
 
         var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeUserRepository);
-        var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager);
+        var appointmentApplication = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
 
         // When
         Func<Task> act = async () => await appointmentApplication.CreateAppointment(lifeAssistant.Id, appointmentDate);
@@ -102,7 +104,7 @@ public class AppointmentsApplicationTests
         await fakeUserRepository.Save();
 
         var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeUserRepository);
-        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager);
+        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
         
         // When
         List<GetAppointmentResponse> result = await application.GetAppointments();
@@ -112,5 +114,59 @@ public class AppointmentsApplicationTests
         result[0].DateTime.Should().Be(dateTime1);
         result[1].DateTime.Should().Be(dateTime2);
         result[2].DateTime.Should().Be(dateTime3);
+    }
+
+    [Fact]
+    public async Task SetAppointmentState_ByLifeAssistantOwningAppointment_SetsGivenState()
+    {
+        // Given
+        ApplicationUser lifeAssistant = this.dataFactory.CreateLifeAssistantWithAppointments();
+        
+        var fakeUserRepository = new FakeApplicationUserRepository();
+        await fakeUserRepository.Insert(lifeAssistant);
+        await fakeUserRepository.Save();
+        
+        var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeUserRepository);
+        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
+        
+        // When
+        GetAppointmentResponse result = await application.SetAppointmentState(lifeAssistant.Id, lifeAssistant.Appointments[0].Id,
+            new SetAppointStateRequest("Pending Pickup"));
+        
+        // Then
+        fakeUserRepository.UpdatedRecords.Should().Contain(lifeAssistant.Id);
+        fakeUserRepository.Saved.Should().BeTrue();
+        
+        result.Id.Should().Be(lifeAssistant.Appointments[0].Id);
+        result.DateTime.Should().Be(lifeAssistant.Appointments[0].DateTime);
+        result.LifeAssistantId.Should().Be(lifeAssistant.Id);
+        result.State.Should().Be("Pending Pickup");
+        Appointment updatedAppointment = (await fakeUserRepository.FindByIdWithAppointments(lifeAssistant.Id)).Appointments[0];
+        updatedAppointment.State.Name.Should().Be("Pending Pickup");
+    }
+    
+    [Fact]
+    public async Task SetAppointmentState_ByOtherLifeAssistants_SetsGivenState()
+    {
+        // Given
+        ApplicationUser lifeAssistant = this.dataFactory.CreateLifeAssistantWithAppointments();
+        ApplicationUser otherLifeAssistant = this.dataFactory.CreateLifeAssistant();
+        
+        var fakeUserRepository = new FakeApplicationUserRepository();
+        await fakeUserRepository.Insert(lifeAssistant);
+        await fakeUserRepository.Insert(otherLifeAssistant);
+        fakeUserRepository.InitSave();
+        
+        var accessControlManager = new AccessControlManager(otherLifeAssistant.Id, fakeUserRepository);
+        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
+        
+        // When
+        Func<Task> act = async () => await application.SetAppointmentState(lifeAssistant.Id, lifeAssistant.Appointments[0].Id,
+            new SetAppointStateRequest("Pending Pickup"));
+        
+        // Then
+        await act.Should().ThrowAsync<IllegalAccessException>();
+        fakeUserRepository.UpdatedRecords.Should().BeEmpty();
+        fakeUserRepository.Saved.Should().BeFalse();
     }
 }

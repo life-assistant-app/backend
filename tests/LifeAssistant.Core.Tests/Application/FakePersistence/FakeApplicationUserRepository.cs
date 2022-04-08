@@ -11,6 +11,10 @@ public class FakeApplicationUserRepository : IApplicationUserRepository
 {
     public IReadOnlyList<IApplicationUserWithAppointments> Data { get; private set; }
     private List<IApplicationUserWithAppointments> newData;
+    public bool Saved { get; private set; } = false;
+    private List<Guid> updatedRecords = new();
+
+    public IReadOnlyList<Guid> UpdatedRecords => updatedRecords;
 
     public FakeApplicationUserRepository()
     {
@@ -49,10 +53,15 @@ public class FakeApplicationUserRepository : IApplicationUserRepository
         return Task.FromResult(this.Data.Where(user => user.Role == role).ToList());
     }
 
+    public void InitSave()
+    {
+        this.Data = newData.ToList();
+    }
 
     public Task Save()
     {
-        this.Data = newData.ToList();
+        InitSave();
+        this.Saved = true;
         return Task.CompletedTask;
     }
 
@@ -67,7 +76,7 @@ public class FakeApplicationUserRepository : IApplicationUserRepository
     {
         int index = this.newData.FindIndex(elt => elt.Id == entity.Id);
         this.newData[index] = entity;
-
+        updatedRecords.Add(entity.Id);
         return Task.CompletedTask;
     }
 

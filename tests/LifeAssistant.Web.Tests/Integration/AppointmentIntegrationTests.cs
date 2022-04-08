@@ -99,6 +99,36 @@ public class AppointmentIntegrationTests : IntegrationTests
         result.Count.Should().Be(1);
         result[0].Id.Should().Be(lifeAssistant.Appointments[0].Id);
         result[0].State.Should().Be(lifeAssistant.Appointments[0].State);
+        result[0].LifeAssistantId.Should().Be(lifeAssistant.Id);
         result[0].DateTime.Date.Should().Be(lifeAssistant.Appointments[0].DateTime.Date);
+    }
+    
+    [Fact]
+    public async Task SetAppointmentState_SetNewStateToAppointment()
+    {
+        // Given
+        ApplicationUserEntity lifeAssistant = await this.dbDataFactory.InsertValidatedLifeAssistantWithAppointments();
+        var appointmentId = lifeAssistant.Appointments[0].Id;
+
+        await Login(lifeAssistant.UserName, this.dbDataFactory.UserPassword);
+
+        // When
+        var response = await this.client
+            .PutAsJsonAsync(
+                $"/api/assistants/{lifeAssistant.Id}/appointments/{appointmentId}",
+                new SetAppointStateRequest("Pending Pickup")
+            );
+        
+        // Then
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<GetAppointmentResponse>();
+        result.Id.Should().Be(appointmentId);
+        result.State.Should().Be("Pending Pickup");
+        result.LifeAssistantId.Should().Be(lifeAssistant.Id);
+        result.DateTime.Date.Should().Be(lifeAssistant.Appointments[0].DateTime.Date);
+
+        AppointmentEntity appointmentEntity =
+            await this.assertDbContext.Appointments.FirstAsync(entity => entity.Id == appointmentId);
+        appointmentEntity.State.Should().Be("Pending Pickup");
     }
 }

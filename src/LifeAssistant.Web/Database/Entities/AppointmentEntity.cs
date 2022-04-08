@@ -13,6 +13,7 @@ public class AppointmentEntity : BaseDbEntity
 
     public AppointmentEntity(Appointment domainEntity)
     {
+        Id = domainEntity.Id;
         State = domainEntity.State.Name;
         DateTime = domainEntity.DateTime;
     }
