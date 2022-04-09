@@ -17,6 +17,7 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ApplicationUserEntity>().HasKey(user => user.Id);
+        modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Id).ValueGeneratedNever();
         modelBuilder.Entity<ApplicationUserEntity>().HasIndex(user => user.UserName).IsUnique();
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.FirstName);
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.LastName);
@@ -29,6 +30,7 @@ public class ApplicationDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<AppointmentEntity>().HasKey(appointment => appointment.Id);
+        modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.Id).ValueGeneratedNever();
         modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.State);
         modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.DateTime);
     }
