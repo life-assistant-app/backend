@@ -72,11 +72,11 @@ public class FakeApplicationUserRepository : IApplicationUserRepository
     }
 
 
-    public Task Update(IApplicationUserWithAppointments entity)
+    public Task Update(IApplicationUserWithAppointments domainUserEntity)
     {
-        int index = this.newData.FindIndex(elt => elt.Id == entity.Id);
-        this.newData[index] = entity;
-        updatedRecords.Add(entity.Id);
+        int index = this.newData.FindIndex(elt => elt.Id == domainUserEntity.Id);
+        this.newData[index] = domainUserEntity;
+        updatedRecords.Add(domainUserEntity.Id);
         return Task.CompletedTask;
     }
 

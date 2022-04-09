@@ -6,7 +6,7 @@ public interface IApplicationUserRepository
 {
     Task Save();
     Task Insert(IApplicationUserWithAppointments entity);
-    Task Update(IApplicationUserWithAppointments entity);
+    Task Update(IApplicationUserWithAppointments domainUserEntity);
     Task<IApplicationUser> FindById(Guid entityId);
     Task<IApplicationUser> FindByUsername(string username);
 

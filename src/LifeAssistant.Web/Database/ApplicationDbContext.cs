@@ -23,7 +23,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Password);
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Validated);
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Role);
-        modelBuilder.Entity<ApplicationUserEntity>().HasMany<AppointmentEntity>().WithOne()
+        modelBuilder.Entity<ApplicationUserEntity>().HasMany<AppointmentEntity>()
+            .WithOne()
             .HasForeignKey("ApplicationUserId")
             .OnDelete(DeleteBehavior.Cascade);
 

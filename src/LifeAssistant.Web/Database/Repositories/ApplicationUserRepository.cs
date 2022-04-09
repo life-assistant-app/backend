@@ -27,7 +27,7 @@ public class ApplicationUserRepository : IApplicationUserRepository
         {
             throw new EntityNotFoundException($"No user with username : {username}");
         }
-        
+
         return applicationUserEntity.ToDomainEntity(appointmentStateFactory);
     }
 
@@ -45,13 +45,14 @@ public class ApplicationUserRepository : IApplicationUserRepository
             .Where(user => user.Role == role)
             .Where(user => user.Validated)
             .ToListAsync();
-        
+
         return applicationUserEntities
             .Select(entity => entity.ToDomainEntity(this.appointmentStateFactory) as IApplicationUser)
             .ToList();
     }
 
-    public async Task<List<IApplicationUserWithAppointments>> FindValidatedWithAppointmentByRole(ApplicationUserRole role)
+    public async Task<List<IApplicationUserWithAppointments>> FindValidatedWithAppointmentByRole(
+        ApplicationUserRole role)
     {
         List<ApplicationUserEntity> applicationUserEntities = await this.context
             .Users
@@ -59,7 +60,7 @@ public class ApplicationUserRepository : IApplicationUserRepository
             .Where(user => user.Role == role)
             .Where(user => user.Validated)
             .ToListAsync();
-        
+
         return applicationUserEntities
             .Select(entity => entity.ToDomainEntity(this.appointmentStateFactory) as IApplicationUserWithAppointments)
             .ToList();
@@ -71,12 +72,12 @@ public class ApplicationUserRepository : IApplicationUserRepository
             .Users
             .Include(user => user.Appointments)
             .FirstOrDefaultAsync(user => user.Id == entityId);
-        
+
         if (applicationUserEntity is null)
         {
             throw new EntityNotFoundException($"No user with id : {entityId}");
         }
-        
+
         return applicationUserEntity;
     }
 
@@ -87,18 +88,39 @@ public class ApplicationUserRepository : IApplicationUserRepository
         await this.context.Users.AddAsync(entity);
     }
 
-    public async Task Update(IApplicationUserWithAppointments entity)
+    public async Task Update(IApplicationUserWithAppointments domainUserEntity)
     {
-        ApplicationUserEntity user = await FindEntityById(entity.Id);
+        ApplicationUserEntity persistenceUserEntity = await FindEntityById(domainUserEntity.Id);
 
-        user.UserName = entity.UserName;
-        user.Password = entity.Password;
-        user.FirstName = entity.FirstName;
-        user.LastName = entity.LastName;
-        user.Role = entity.Role;
-        user.Validated = entity.Validated;
+        IDictionary<Guid, AppointmentEntity> appointmentEntitiesById =
+            persistenceUserEntity.Appointments
+                .ToDictionary(appointmentEntity => appointmentEntity.Id, appointmentEntity => appointmentEntity);
 
-        this.context.Update(user);
+        persistenceUserEntity.UserName = domainUserEntity.UserName;
+        persistenceUserEntity.Password = domainUserEntity.Password;
+        persistenceUserEntity.FirstName = domainUserEntity.FirstName;
+        persistenceUserEntity.LastName = domainUserEntity.LastName;
+        persistenceUserEntity.Role = domainUserEntity.Role;
+        persistenceUserEntity.Validated = domainUserEntity.Validated;
+        persistenceUserEntity.Appointments = domainUserEntity.Appointments
+            .Select(appointment => BuildOrUpdateAppointmentEntity(appointmentEntitiesById, appointment))
+            .ToList();
+
+        this.context.Users.Update(persistenceUserEntity);
+    }
+
+    private static AppointmentEntity BuildOrUpdateAppointmentEntity(IDictionary<Guid, AppointmentEntity> appointmentEntitiesById,
+        Appointment appointment)
+    {
+        if (!appointmentEntitiesById.ContainsKey(appointment.Id))
+        {
+            return new AppointmentEntity(appointment);
+        }
+
+        AppointmentEntity appointmentEntity = appointmentEntitiesById[appointment.Id];
+        appointmentEntity.State = appointment.State.Name;
+        appointmentEntity.DateTime = appointment.DateTime;
+        return appointmentEntity;
     }
 
     public async Task<IApplicationUser> FindById(Guid entityId)
@@ -110,7 +132,7 @@ public class ApplicationUserRepository : IApplicationUserRepository
         {
             throw new EntityNotFoundException($"No user with id : {entityId}");
         }
-        
+
         return applicationUserEntity.ToDomainEntity(this.appointmentStateFactory);
     }
 
