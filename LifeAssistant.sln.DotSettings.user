@@ -21,6 +21,8 @@
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Integration/f:AuthenticationIntegrationTests.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Database/f:ApplicationUserRepositoryTest.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Integration/f:AppointmentIntegrationTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;68491376-0088-46E8-936A-D9ADB6644AAA/d:Application/f:AppointmentsApplicationTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;68491376-0088-46E8-936A-D9ADB6644AAA/d:Domain/d:Rules/f:AccessControlManagerTest.cs&lt;/ProjectFile&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FHOST/@EntryIndexedValue">localhost</s:String>

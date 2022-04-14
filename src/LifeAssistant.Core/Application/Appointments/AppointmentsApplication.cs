@@ -78,6 +78,7 @@ public class AppointmentsApplication
                     .Appointments
                     .Select(appointment => BuildAppointmentResponse(appointment, applicationUser.Id))
             )
+            .OrderBy(appointment => appointment.DateTime)
             .ToList();
     }
 
@@ -102,12 +103,14 @@ public class AppointmentsApplication
         {
             return lifeAssistant.Appointments
                 .Select(appointment => BuildAppointmentResponse(appointment, lifeAssistant.Id))
+                .OrderBy(appointment => appointment.DateTime)
                 .ToList();
         }
         
         return lifeAssistant.Appointments
             .Where(appointment => appointment.State.Name == state)
             .Select(appointment => BuildAppointmentResponse(appointment, lifeAssistant.Id))
+            .OrderBy(appointment => appointment.DateTime)
             .ToList();
     }
 }

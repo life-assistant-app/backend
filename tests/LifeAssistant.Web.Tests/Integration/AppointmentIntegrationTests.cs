@@ -97,6 +97,7 @@ public class AppointmentIntegrationTests : IntegrationTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<GetAppointmentResponse>>();
         result.Count.Should().Be(2);
+        
         result[0].Id.Should().Be(lifeAssistant.Appointments[0].Id);
         result[0].State.Should().Be(lifeAssistant.Appointments[0].State);
         result[0].LifeAssistantId.Should().Be(lifeAssistant.Id);

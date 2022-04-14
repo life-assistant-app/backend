@@ -89,9 +89,9 @@ public class AppointmentsApplicationTests
         // Given
         ApplicationUser lifeAssistant = dataFactory.CreateLifeAssistant();
         
-        DateTime dateTime1 = DateTime.Now.AddDays(1);
-        DateTime dateTime2 = dateTime1.AddDays(1);
-        DateTime dateTime3 = dateTime2.AddDays(1);
+        DateTime dateTime1 = DateTime.Now.AddDays(3);
+        DateTime dateTime2 = DateTime.Now.AddDays(2);
+        DateTime dateTime3 = DateTime.Now.AddDays(1);
         lifeAssistant.Appointments = new List<Appointment>
         {
             new(dateTime1),
@@ -111,9 +111,9 @@ public class AppointmentsApplicationTests
         
         // Then
         result.Count.Should().Be(3);
-        result[0].DateTime.Should().Be(dateTime1);
-        result[1].DateTime.Should().Be(dateTime2);
-        result[2].DateTime.Should().Be(dateTime3);
+        result[0].Id.Should().Be(lifeAssistant.Appointments[2].Id);
+        result[1].Id.Should().Be(lifeAssistant.Appointments[1].Id);
+        result[2].Id.Should().Be(lifeAssistant.Appointments[0].Id);
     }
 
     [Fact]
@@ -216,6 +216,9 @@ public class AppointmentsApplicationTests
         
         // Then
         result.Should().HaveCount(3);
+        result[0].Id.Should().Be(lifeAssistant.Appointments[2].Id);
+        result[1].Id.Should().Be(lifeAssistant.Appointments[1].Id);
+        result[2].Id.Should().Be(lifeAssistant.Appointments[0].Id);
     }
     
     [Fact]

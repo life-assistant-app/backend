@@ -37,9 +37,9 @@ public class DataFactory
     public ApplicationUser CreateLifeAssistantWithAppointments()
     {
         ApplicationUser user = CreateLifeAssistant();
-        DateTime dateTime1 = DateTime.Now.AddDays(1);
-        DateTime dateTime2 = dateTime1.AddDays(1);
-        DateTime dateTime3 = dateTime2.AddDays(1);
+        DateTime dateTime1 = DateTime.Now.AddDays(3);
+        DateTime dateTime2 = DateTime.Now.AddDays(2);
+        DateTime dateTime3 = DateTime.Now.AddDays(1);
         user.Appointments = new List<Appointment>
         {
             new(dateTime1),
