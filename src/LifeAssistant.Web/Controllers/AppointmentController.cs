@@ -23,7 +23,7 @@ public class AppointmentController : ControllerBase
     [HttpGet("appointments")]
     public async Task<ActionResult<List<GetAppointmentResponse>>> GetAppointments()
     {
-        return Ok(await this.application.GetAppointments());
+        return Ok(await this.application.GetAllAppointments());
     }
 
     /// <summary>
@@ -40,6 +40,20 @@ public class AppointmentController : ControllerBase
         return Created("/api/assistants/{id:guid}/appointments",
             await application.CreateAppointment(id, request.DateTime));
     }
+    
+    /// <summary>
+    /// Get the appointments of a life assistant
+    /// The appointment can optionally be filtered by state
+    /// </summary>
+    /// <param name="id">The life assistant to get the appointments from</param>
+    /// <param name="state">Optional state to filter the appointments</param>
+    /// <returns>The list of corresponding appointments</returns>
+    [HttpGet("assistants/{id:guid}/appointments")]
+    public async Task<ActionResult<GetAppointmentResponse>> GetLifeAssistantAppointment(Guid id, [FromQuery] string? state)
+    {
+        List<GetAppointmentResponse> lifeAssistantAppointments = await application.GetLifeAssistantAppointments(id, state);
+        return Ok(lifeAssistantAppointments);
+    }
 
     /// <summary>
     /// Sets the state of an existing appointment
@@ -50,6 +64,7 @@ public class AppointmentController : ControllerBase
     public async Task<ActionResult<GetAppointmentResponse>> SetAppointmentState([FromBody] SetAppointStateRequest dto,
         Guid lifeAssistantId, Guid appointmentId)
     {
-        return Ok(await application.SetAppointmentState(lifeAssistantId, appointmentId, dto));
+        GetAppointmentResponse getAppointmentResponse = await application.SetAppointmentState(lifeAssistantId, appointmentId, dto);
+        return Ok(getAppointmentResponse);
     }
 }

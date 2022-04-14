@@ -96,11 +96,15 @@ public class AppointmentIntegrationTests : IntegrationTests
         // Then
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<GetAppointmentResponse>>();
-        result.Count.Should().Be(1);
+        result.Count.Should().Be(2);
         result[0].Id.Should().Be(lifeAssistant.Appointments[0].Id);
         result[0].State.Should().Be(lifeAssistant.Appointments[0].State);
         result[0].LifeAssistantId.Should().Be(lifeAssistant.Id);
         result[0].DateTime.Date.Should().Be(lifeAssistant.Appointments[0].DateTime.Date);
+        result[1].Id.Should().Be(lifeAssistant.Appointments[1].Id);
+        result[1].State.Should().Be(lifeAssistant.Appointments[1].State);
+        result[1].LifeAssistantId.Should().Be(lifeAssistant.Id);
+        result[1].DateTime.Date.Should().Be(lifeAssistant.Appointments[1].DateTime.Date);
     }
     
     [Fact]
@@ -130,5 +134,22 @@ public class AppointmentIntegrationTests : IntegrationTests
         AppointmentEntity appointmentEntity =
             await this.assertDbContext.Appointments.FirstAsync(entity => entity.Id == appointmentId);
         appointmentEntity.State.Should().Be("Pending Pickup");
+    }
+
+    [Fact]
+    public async Task GetLifeAssistantAppointments_ByState_ReturnsAppointmentsWithGivenState()
+    {
+        // Given
+        ApplicationUserEntity lifeAssistant = await this.dbDataFactory.InsertValidatedLifeAssistantWithAppointments();
+        await Login(lifeAssistant.UserName, this.dbDataFactory.UserPassword);
+        
+        // When
+        var response = await this.client
+            .GetAsync($"/api/assistants/{lifeAssistant.Id}/appointments?state=Planned");
+
+        // Then
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<List<GetAppointmentResponse>>();
+        result.Count.Should().Be(1);
     }
 }

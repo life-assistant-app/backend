@@ -107,7 +107,7 @@ public class AppointmentsApplicationTests
         var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
         
         // When
-        List<GetAppointmentResponse> result = await application.GetAppointments();
+        List<GetAppointmentResponse> result = await application.GetAllAppointments();
         
         // Then
         result.Count.Should().Be(3);
@@ -168,5 +168,77 @@ public class AppointmentsApplicationTests
         await act.Should().ThrowAsync<IllegalAccessException>();
         fakeUserRepository.UpdatedRecords.Should().BeEmpty();
         fakeUserRepository.Saved.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task GetAssistantAppointments_WithState_GetOnlyAppointmentWithGivenState()
+    {
+        // Given
+        ApplicationUser lifeAssistant = this.dataFactory.CreateLifeAssistantWithAppointments();
+        Appointment appointment = lifeAssistant.Appointments.First();
+
+        appointment.State = new AppointmentStateFactory().BuildStateFromAppointment(appointment, "Pending Pickup");
+        var fakeUserRepository = new FakeApplicationUserRepository();
+        await fakeUserRepository.Insert(lifeAssistant);
+        fakeUserRepository.InitSave();
+        
+        var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeUserRepository);
+        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
+
+        // When
+        List<GetAppointmentResponse> result = await application.GetLifeAssistantAppointments(lifeAssistant.Id,"Pending Pickup");
+        
+        // Then
+        result.Should().HaveCount(1);
+        result.First().Id.Should().Be(appointment.Id);
+        result.First().State.Should().Be("Pending Pickup");
+        result.First().DateTime.Should().Be(appointment.DateTime);
+        result.First().LifeAssistantId.Should().Be(lifeAssistant.Id);
+    }
+    
+    [Fact]
+    public async Task GetAssistantAppointments_NoState_ReturnsAllAppointmentsFromLifeAssistant()
+    {
+        // Given
+        ApplicationUser lifeAssistant = this.dataFactory.CreateLifeAssistantWithAppointments();
+        Appointment appointment = lifeAssistant.Appointments.First();
+
+        appointment.State = new AppointmentStateFactory().BuildStateFromAppointment(appointment, "Pending Pickup");
+        var fakeUserRepository = new FakeApplicationUserRepository();
+        await fakeUserRepository.Insert(lifeAssistant);
+        fakeUserRepository.InitSave();
+        
+        var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeUserRepository);
+        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
+
+        // When
+        List<GetAppointmentResponse> result = await application.GetLifeAssistantAppointments(lifeAssistant.Id);
+        
+        // Then
+        result.Should().HaveCount(3);
+    }
+    
+    [Fact]
+    public async Task GetAssistantAppointments_OtherLifeAssistant_ReturnsAllAppointmentsFromLifeAssistant()
+    {
+        // Given
+        ApplicationUser lifeAssistant = this.dataFactory.CreateLifeAssistantWithAppointments();
+        ApplicationUser otherLifeAssistant = this.dataFactory.CreateLifeAssistant();
+        Appointment appointment = lifeAssistant.Appointments.First();
+
+        appointment.State = new AppointmentStateFactory().BuildStateFromAppointment(appointment, "Pending Pickup");
+        var fakeUserRepository = new FakeApplicationUserRepository();
+        await fakeUserRepository.Insert(lifeAssistant);
+        await fakeUserRepository.Insert(otherLifeAssistant);
+        fakeUserRepository.InitSave();
+        
+        var accessControlManager = new AccessControlManager(otherLifeAssistant.Id, fakeUserRepository);
+        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
+
+        // When
+        Func<Task> act = async () => await application.GetLifeAssistantAppointments(lifeAssistant.Id);
+        
+        // Then
+        await act.Should().ThrowAsync<IllegalAccessException>();
     }
 }

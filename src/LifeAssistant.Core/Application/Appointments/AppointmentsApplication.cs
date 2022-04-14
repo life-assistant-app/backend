@@ -24,7 +24,7 @@ public class AppointmentsApplication
     public async Task<GetAppointmentResponse> SetAppointmentState(Guid lifeAssistantId, Guid appointmentId,
         SetAppointStateRequest state)
     {
-        await this.accessControlManager.EnsureUserCanUpdateAppointmentState(lifeAssistantId);
+        await this.accessControlManager.EnsureCurrentUserCanReadOrUpdateUserAppointments(lifeAssistantId);
         
         IApplicationUserWithAppointments lifeAssistant = await this.applicationUserRepository
             .FindByIdWithAppointments(lifeAssistantId);
@@ -67,7 +67,7 @@ public class AppointmentsApplication
         );
     }
 
-    public async Task<List<GetAppointmentResponse>> GetAppointments()
+    public async Task<List<GetAppointmentResponse>> GetAllAppointments()
     {
         List<IApplicationUserWithAppointments> applicationUsers = await this.applicationUserRepository
             .FindValidatedWithAppointmentByRole(ApplicationUserRole.LifeAssistant);
@@ -76,13 +76,38 @@ public class AppointmentsApplication
             .SelectMany(applicationUser =>
                 applicationUser
                     .Appointments
-                    .Select(appointment => new GetAppointmentResponse(
-                        appointment.Id,
-                        appointment.State.Name,
-                        appointment.DateTime,
-                        applicationUser.Id
-                    ))
+                    .Select(appointment => BuildAppointmentResponse(appointment, applicationUser.Id))
             )
+            .ToList();
+    }
+
+    private static GetAppointmentResponse BuildAppointmentResponse(Appointment appointment, Guid applicationUserId)
+    {
+        return new GetAppointmentResponse(
+            appointment.Id,
+            appointment.State.Name,
+            appointment.DateTime,
+            applicationUserId
+        );
+    }
+
+    public async Task<List<GetAppointmentResponse>> GetLifeAssistantAppointments(Guid lifeAssistantId, string? state = null)
+    {
+        await this.accessControlManager.EnsureCurrentUserCanReadOrUpdateUserAppointments(lifeAssistantId);
+        
+        IApplicationUserWithAppointments lifeAssistant =
+            await applicationUserRepository.FindByIdWithAppointments(lifeAssistantId);
+
+        if (state is null)
+        {
+            return lifeAssistant.Appointments
+                .Select(appointment => BuildAppointmentResponse(appointment, lifeAssistant.Id))
+                .ToList();
+        }
+        
+        return lifeAssistant.Appointments
+            .Where(appointment => appointment.State.Name == state)
+            .Select(appointment => BuildAppointmentResponse(appointment, lifeAssistant.Id))
             .ToList();
     }
 }

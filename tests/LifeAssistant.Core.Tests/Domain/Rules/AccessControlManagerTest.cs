@@ -22,7 +22,7 @@ public class AccessControlManagerTest
         ApplicationUser user = this.dataFactory.CreateAgencyEmployee();
         var fakeRepository = new FakeApplicationUserRepository();
         await fakeRepository.Insert(user);
-        await fakeRepository.Save();
+        fakeRepository.InitSave();
 
         var accessControlManager = new AccessControlManager(user.Id, fakeRepository);
 
@@ -40,13 +40,74 @@ public class AccessControlManagerTest
         ApplicationUser user = this.dataFactory.CreateLifeAssistant();
         var fakeRepository = new FakeApplicationUserRepository();
         await fakeRepository.Insert(user);
-        await fakeRepository.Save();
+        fakeRepository.InitSave();
 
         var accessControlManager = new AccessControlManager(user.Id, fakeRepository);
 
         // When
         Func<Task> act = async () => await accessControlManager.EnsureUserCanCreateAppointment();
 
+        // Then
+        await act.Should().ThrowAsync<IllegalAccessException>();
+    }
+
+    [Fact]
+    public async Task EnsureCurrentUserCanReadOrUpdateUserAppointments_CurrentUserIsAnyAgencyEmployee_NoException()
+    {
+        // Given
+        ApplicationUser lifeAssistant = this.dataFactory.CreateLifeAssistant();
+        ApplicationUser agencyEmployee = this.dataFactory.CreateAgencyEmployee();
+        var fakeRepository = new FakeApplicationUserRepository();
+        await fakeRepository.Insert(lifeAssistant);
+        await fakeRepository.Insert(agencyEmployee);
+        fakeRepository.InitSave();
+
+        var accessControlManager = new AccessControlManager(agencyEmployee.Id, fakeRepository);
+
+        // When
+        Func<Task> act = async () =>
+            await accessControlManager.EnsureCurrentUserCanReadOrUpdateUserAppointments(lifeAssistant.Id);
+        
+        // Then
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task EnsureCurrentUserCanReadOrUpdateUserAppointments_CurrentUserIsTheLifeAssistant_NoException()
+    {
+        // Given
+        ApplicationUser lifeAssistant = this.dataFactory.CreateLifeAssistant();
+        var fakeRepository = new FakeApplicationUserRepository();
+        await fakeRepository.Insert(lifeAssistant);
+        fakeRepository.InitSave();
+
+        var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeRepository);
+
+        // When
+        Func<Task> act = async () =>
+            await accessControlManager.EnsureCurrentUserCanReadOrUpdateUserAppointments(lifeAssistant.Id);
+        
+        // Then
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task EnsureCurrentUserCanReadOrUpdateUserAppointments_CurrentUserIsAnotherLifeAssistant_Throws()
+    {
+        // Given
+        ApplicationUser lifeAssistant = this.dataFactory.CreateLifeAssistant();
+        ApplicationUser otherLifeAssistant = this.dataFactory.CreateLifeAssistant();
+        var fakeRepository = new FakeApplicationUserRepository();
+        await fakeRepository.Insert(lifeAssistant);
+        await fakeRepository.Insert(otherLifeAssistant);
+        fakeRepository.InitSave();
+
+        var accessControlManager = new AccessControlManager(otherLifeAssistant.Id, fakeRepository);
+
+        // When
+        Func<Task> act = async () =>
+            await accessControlManager.EnsureCurrentUserCanReadOrUpdateUserAppointments(lifeAssistant.Id);
+        
         // Then
         await act.Should().ThrowAsync<IllegalAccessException>();
     }

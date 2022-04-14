@@ -27,12 +27,12 @@ public class AccessControlManager
         }
     }
 
-    public async Task<IApplicationUser> GetCurrentUser()
+    private async Task<IApplicationUser> GetCurrentUser()
     {
         return this.currentUser ??= await userRepository.FindById(this.currentUserId);
     }
 
-    public async Task EnsureUserCanUpdateAppointmentState(Guid lifeAssistantId)
+    public async Task EnsureCurrentUserCanReadOrUpdateUserAppointments(Guid lifeAssistantId)
     {
         IApplicationUser user = await GetCurrentUser();
         if (user.Role is not ApplicationUserRole.AgencyEmployee && user.Id != lifeAssistantId)

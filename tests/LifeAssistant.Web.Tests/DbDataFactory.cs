@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Web.Database;
@@ -68,17 +69,26 @@ public class DbDataFactory
     {
         return await InsertLifeAssistantWithAppointments(true);
     }
-    
+
     public async Task<ApplicationUserEntity> InsertLifeAssistantWithAppointments(bool validated)
     {
         var lifeAssistant = CreateApplicationUserEntity();
         lifeAssistant.Validated = validated;
-        lifeAssistant.Appointments.Add(new AppointmentEntity()
+        lifeAssistant.Appointments = new List<AppointmentEntity>
         {
-            DateTime = DateTime.Now.AddDays(1),
-            Id = Guid.NewGuid(),
-            State = "Planned"
-        });
+            new AppointmentEntity()
+            {
+                DateTime = DateTime.Now.AddDays(1),
+                Id = Guid.NewGuid(),
+                State = "Planned"
+            },
+            new AppointmentEntity()
+            {
+                DateTime = DateTime.Now.AddDays(1),
+                Id = Guid.NewGuid(),
+                State = "Pending Pickup"
+            }
+        };
 
         await this.context.Users.AddAsync(lifeAssistant);
         await this.context.SaveChangesAsync();
