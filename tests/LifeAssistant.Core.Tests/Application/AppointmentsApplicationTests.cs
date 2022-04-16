@@ -84,7 +84,7 @@ public class AppointmentsApplicationTests
     }
 
     [Fact]
-    public async Task GetAppointments_ByAgencyEmployee_ReturnsAllExistingAppointments()
+    public async Task GetAppointments_ByLifeAssistant_Throws()
     {
         // Given
         ApplicationUser lifeAssistant = dataFactory.CreateLifeAssistant();
@@ -101,9 +101,41 @@ public class AppointmentsApplicationTests
 
         var fakeUserRepository = new FakeApplicationUserRepository();
         await fakeUserRepository.Insert(lifeAssistant);
-        await fakeUserRepository.Save();
+        fakeUserRepository.InitSave();
 
         var accessControlManager = new AccessControlManager(lifeAssistant.Id, fakeUserRepository);
+        var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
+        
+        // When
+        Func<Task> act = async () => await application.GetAppointments();
+        
+        // Then
+        await act.Should().ThrowAsync<IllegalAccessException>();
+    }
+    
+    [Fact]
+    public async Task GetAppointments_ByAgencyEmployee_ReturnsAllExistingAppointments()
+    {
+        // Given
+        ApplicationUser agencyEmployee = dataFactory.CreateAgencyEmployee();
+        ApplicationUser lifeAssistant = dataFactory.CreateLifeAssistant();
+        
+        DateTime dateTime1 = DateTime.Now.AddDays(1);
+        DateTime dateTime2 = dateTime1.AddDays(1);
+        DateTime dateTime3 = dateTime2.AddDays(1);
+        lifeAssistant.Appointments = new List<Appointment>
+        {
+            new(dateTime1),
+            new(dateTime2),
+            new(dateTime3),
+        };
+
+        var fakeUserRepository = new FakeApplicationUserRepository();
+        await fakeUserRepository.Insert(lifeAssistant);
+        await fakeUserRepository.Insert(agencyEmployee);
+        fakeUserRepository.InitSave();
+
+        var accessControlManager = new AccessControlManager(agencyEmployee.Id, fakeUserRepository);
         var application = new AppointmentsApplication(fakeUserRepository, accessControlManager, new AppointmentStateFactory());
         
         // When

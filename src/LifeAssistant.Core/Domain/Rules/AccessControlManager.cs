@@ -40,4 +40,13 @@ public class AccessControlManager
             throw new IllegalAccessException("An appointment can only be modified by the owning life assistant or an agency employee");
         }
     }
+
+    public async Task EnsureIsAgencyEmployee()
+    {
+        IApplicationUser user = await GetCurrentUser();
+        if (user.Role is not ApplicationUserRole.AgencyEmployee)
+        {
+            throw new IllegalAccessException("Only an agency employee can read all appointments");
+        }
+    }
 }
