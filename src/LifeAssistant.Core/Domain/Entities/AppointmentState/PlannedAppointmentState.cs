@@ -6,6 +6,6 @@ public class PlannedAppointmentState : AppointmentState
 
     public override bool AcceptState(IAppointmentState state)
     {
-        return state is PendingAppointmentState;
+        return state is (PendingAppointmentState or RefusedAppointmentState);
     }
 }

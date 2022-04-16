@@ -43,6 +43,47 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Appointment_RefusePlanned_IsRefused()
+    {
+        // Given
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
+
+        // When
+        appointment.State = new RefusedAppointmentState();
+
+        // Then
+        appointment.State.Name.Should().Be("Refused");
+    }
+    
+    [Fact]
+    public void Appointment_RefusePending_Throws()
+    {
+        // Given
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
+        appointment.State = new PendingAppointmentState();
+        // When
+        Action act = () => appointment.State = new RefusedAppointmentState();
+
+        // Then
+        act.Should().Throw<EntityStateException>();
+    }
+    
+    [Fact]
+    public void Appointment_RefuseFinished_Throws()
+    {
+        // Given
+        var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
+        appointment.State = new PendingAppointmentState();
+        appointment.State = new FinishedAppointmentState();
+        
+        // When
+        Action act = () => appointment.State = new RefusedAppointmentState();
+
+        // Then
+        act.Should().Throw<EntityStateException>();
+    }
+    
+    [Fact]
     public void Appointment_AcceptFinished_Throws()
     {
         // Given
