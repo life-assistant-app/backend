@@ -69,6 +69,8 @@ public class AppointmentsApplication
 
     public async Task<List<GetAppointmentResponse>> GetAllAppointments()
     {
+        await this.accessControlManager.EnsureIsAgencyEmployee();
+        
         List<IApplicationUserWithAppointments> applicationUsers = await this.applicationUserRepository
             .FindValidatedWithAppointmentByRole(ApplicationUserRole.LifeAssistant);
 
