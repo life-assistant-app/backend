@@ -15,22 +15,12 @@
       &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests.Appointment_Accept_IsAccepted&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests.Appointment_PickUpPlanned_Throws&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Domain.Entities.AppointmentTests&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Application.AppointmentsApplicationTests.CreateAppointment_ByLifeAssistant_Throws&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Application.AppointmentsApplicationTests.GetAppointments_ByAgencyEmployee_ReturnsAllExistingAppointments&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::F1403B05-205C-45D6-9327-46F548B8BA5D::net6.0::LifeAssistant.Web.Tests.Database.AppointmentRepositoryTests.GetAppointments_ReturnsAllAppointmentsInDatabase&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::F1403B05-205C-45D6-9327-46F548B8BA5D::net6.0::LifeAssistant.Web.Tests.Integration.ApplicationUsersIntegrationTests.GetLifeAssistants_Returns200AndLifeAssistantRecords&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Application.AppointmentsApplicationTests.SetAppointmentState_SetsGivenState&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Application.AppointmentsApplicationTests.SetAppointmentState_ByOtherUser_SetsGivenState&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Application.AppointmentsApplicationTests.SetAppointmentState_ByOtherLifeAssistants_SetsGivenState&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::68491376-0088-46E8-936A-D9ADB6644AAA::net6.0::LifeAssistant.Core.Tests.Application.AppointmentsApplicationTests.SetAppointmentState_ByLifeAssistantOwningAppointment_SetsGivenState&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;ProjectFile&gt;68491376-0088-46E8-936A-D9ADB6644AAA/d:Application/f:UsersApplicationTests.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Database/f:RepositoryTests.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Integration/f:AuthenticationIntegrationTests.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Database/f:ApplicationUserRepositoryTest.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;F1403B05-205C-45D6-9327-46F548B8BA5D/d:Integration/f:AppointmentIntegrationTests.cs&lt;/ProjectFile&gt;&#xD;
-    &lt;ProjectFile&gt;68491376-0088-46E8-936A-D9ADB6644AAA/d:Domain/d:Rules/f:AccessControlManagerTest.cs&lt;/ProjectFile&gt;&#xD;
-    &lt;ProjectFile&gt;68491376-0088-46E8-936A-D9ADB6644AAA/d:Application/f:AppointmentsApplicationTests.cs&lt;/ProjectFile&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FHOST/@EntryIndexedValue">localhost</s:String>
