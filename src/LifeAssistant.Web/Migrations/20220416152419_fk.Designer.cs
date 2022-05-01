@@ -3,6 +3,7 @@ using System;
 using LifeAssistant.Web.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeAssistant.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220416152419_fk")]
+    partial class fk
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +66,6 @@ namespace LifeAssistant.Web.Migrations
 
                     b.Property<Guid?>("ApplicationUserEntityId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateOnly>("CreatedDate")
-                        .HasColumnType("date");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp without time zone");

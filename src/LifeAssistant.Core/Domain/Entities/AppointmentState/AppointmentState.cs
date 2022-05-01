@@ -1,4 +1,6 @@
-﻿namespace LifeAssistant.Core.Domain.Entities.AppointmentState;
+﻿using LifeAssistant.Core.Domain.Entities.Appointments;
+
+namespace LifeAssistant.Core.Domain.Entities.AppointmentState;
 
 public abstract class AppointmentState : IAppointmentState
 {

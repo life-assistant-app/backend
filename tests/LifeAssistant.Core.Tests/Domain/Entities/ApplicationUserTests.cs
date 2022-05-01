@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.ApplicationUser;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Exceptions;
 using Xunit;
 

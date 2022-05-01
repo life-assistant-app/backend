@@ -1,4 +1,5 @@
 ﻿using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database.Entities;

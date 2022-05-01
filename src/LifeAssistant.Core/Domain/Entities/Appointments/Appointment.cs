@@ -1,13 +1,13 @@
 ﻿using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Core.Domain.Exceptions;
 
-namespace LifeAssistant.Core.Domain.Entities;
+namespace LifeAssistant.Core.Domain.Entities.Appointments;
 
 public class Appointment : Entity
 {
     private IAppointmentState state;
     private DateTime dateTime;
-    
+
     public IAppointmentState State
     {
         get => state;
@@ -20,7 +20,8 @@ public class Appointment : Entity
             }
             else
             {
-                throw new EntityStateException($"Appointment State {state.Name} does not accept {value.Name} as next state");
+                throw new EntityStateException(
+                    $"Appointment State {state.Name} does not accept {value.Name} as next state");
             }
         }
     }
@@ -33,26 +34,26 @@ public class Appointment : Entity
     public DateTime DateTime
     {
         get => dateTime;
-        set => dateTime = value > DateTime.Now
+        set => dateTime = value > DateTime.Now || State.Name is "Finished"
             ? value
             : throw new EntityStateException("Appointment date should be in the past");
     }
 
-    private Appointment(Guid id, DateTime dateTime)
+    public DateOnly CreatedDate { get; private set; }
+
+    public Appointment(Guid id, DateTime dateTime, IAppointmentStateFactory stateFactory, string stateName, DateOnly createdDate)
         : base(id)
     {
-        this.DateTime = dateTime;
-    }
-
-    public Appointment(Guid id, DateTime dateTime, IAppointmentStateFactory stateFactory, string stateName)
-        : this(id, dateTime)
-    {
         state = stateFactory.BuildStateFromAppointment(this, stateName);
+        DateTime = dateTime;
+        CreatedDate = createdDate;
     }
 
     public Appointment(DateTime dateTime)
-        : this(Guid.NewGuid(), dateTime)
+        : base(Guid.NewGuid())
     {
         State = new PlannedAppointmentState();
+        DateTime = dateTime;
+        CreatedDate = DateOnly.FromDateTime(DateTime.Now);
     }
 }

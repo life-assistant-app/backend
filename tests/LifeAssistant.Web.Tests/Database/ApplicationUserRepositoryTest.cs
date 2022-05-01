@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.ApplicationUser;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Web.Database.Entities;

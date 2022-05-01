@@ -1,4 +1,4 @@
-﻿namespace LifeAssistant.Core.Domain.Entities;
+﻿namespace LifeAssistant.Core.Domain.Entities.Appointments;
 
 public interface IAppointmentStateFactory
 {

@@ -1,4 +1,5 @@
 ﻿using LifeAssistant.Core.Domain.Exceptions;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 
 namespace LifeAssistant.Core.Domain.Entities.ApplicationUser;
 

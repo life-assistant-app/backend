@@ -26,12 +26,13 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<ApplicationUserEntity>().Property(user => user.Role);
         modelBuilder.Entity<ApplicationUserEntity>().HasMany<AppointmentEntity>()
             .WithOne()
-            .HasForeignKey("ApplicationUserId")
+            .HasForeignKey(appointmentEntity => appointmentEntity.LifeAssistantId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<AppointmentEntity>().HasKey(appointment => appointment.Id);
         modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.Id).ValueGeneratedNever();
         modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.State);
         modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.DateTime);
+        modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.CreatedDate);
     }
 }

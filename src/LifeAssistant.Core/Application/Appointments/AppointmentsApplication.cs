@@ -1,6 +1,7 @@
 ﻿using LifeAssistant.Core.Application.Appointments.Contracts;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.ApplicationUser;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Persistence;
@@ -12,13 +13,15 @@ public class AppointmentsApplication
     private readonly IApplicationUserRepository applicationUserRepository;
     private readonly AccessControlManager accessControlManager;
     private readonly IAppointmentStateFactory appointmentStateFactory;
+    private readonly IAppointmentRepository appointmentRepository;
 
     public AppointmentsApplication(IApplicationUserRepository applicationUserRepository,
-        AccessControlManager accessControlManager, IAppointmentStateFactory appointmentStateFactory)
+        AccessControlManager accessControlManager, IAppointmentStateFactory appointmentStateFactory, IAppointmentRepository appointmentRepository)
     {
         this.applicationUserRepository = applicationUserRepository;
         this.accessControlManager = accessControlManager;
         this.appointmentStateFactory = appointmentStateFactory;
+        this.appointmentRepository = appointmentRepository;
     }
 
     public async Task<GetAppointmentResponse> SetAppointmentState(Guid lifeAssistantId, Guid appointmentId,
@@ -114,5 +117,13 @@ public class AppointmentsApplication
             .Select(appointment => BuildAppointmentResponse(appointment, lifeAssistant.Id))
             .OrderBy(appointment => appointment.DateTime)
             .ToList();
+    }
+
+    public async Task CleanupAppointments()
+    {
+        List<Appointment> appointmentsToDelete = await this.appointmentRepository
+            .FindAppointmentsToDelete();
+
+        await this.appointmentRepository.DeleteAppointments(appointmentsToDelete);
     }
 }

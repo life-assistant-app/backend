@@ -81,12 +81,14 @@ public class DbDataFactory
                 DateTime = DateTime.Now.AddDays(1),
                 Id = Guid.NewGuid(),
                 State = "Planned",
+                LifeAssistantId = lifeAssistant.Id
             },
             new AppointmentEntity()
             {
                 DateTime = DateTime.Now.AddDays(2),
                 Id = Guid.NewGuid(),
-                State = "Pending Pickup"
+                State = "Pending Pickup",
+                LifeAssistantId = lifeAssistant.Id
             }
         };
 

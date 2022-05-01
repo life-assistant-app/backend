@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.ApplicationUser;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 
 namespace LifeAssistant.Web.Tests;
 

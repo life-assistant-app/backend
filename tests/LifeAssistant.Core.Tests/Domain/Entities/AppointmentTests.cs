@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Web.Tests;
@@ -54,7 +55,7 @@ public class AppointmentTests
         // Then
         appointment.State.Name.Should().Be("Refused");
     }
-    
+
     [Fact]
     public void Appointment_RefusePending_Throws()
     {
@@ -67,7 +68,7 @@ public class AppointmentTests
         // Then
         act.Should().Throw<EntityStateException>();
     }
-    
+
     [Fact]
     public void Appointment_RefuseFinished_Throws()
     {
@@ -75,14 +76,14 @@ public class AppointmentTests
         var appointment = new Appointment(DateTime.Now.Add(TimeSpan.FromDays(3)));
         appointment.State = new PendingAppointmentState();
         appointment.State = new FinishedAppointmentState();
-        
+
         // When
         Action act = () => appointment.State = new RefusedAppointmentState();
 
         // Then
         act.Should().Throw<EntityStateException>();
     }
-    
+
     [Fact]
     public void Appointment_AcceptFinished_Throws()
     {
@@ -123,8 +124,7 @@ public class AppointmentTests
 
         // When
         Action act = () => appointment.State = new PendingAppointmentState();
-        ;
-
+        
         // Then
         act.Should().Throw<EntityStateException>();
     }
@@ -167,5 +167,34 @@ public class AppointmentTests
 
         // Then
         act.Should().Throw<EntityStateException>();
+    }
+
+    [Fact]
+    public void Appointment_DateInThePastButFinished_DoesntThrows()
+    {
+        // Given
+        var dateTime = DateTime.Now.Subtract(TimeSpan.FromDays(3));
+
+        // When
+        Action act = () => new Appointment(
+            Guid.NewGuid(),
+            dateTime, 
+            new AppointmentStateFactory(),
+            "Finished",
+            DateOnly.FromDateTime(DateTime.Today)
+        );
+
+        // Then
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Appointment_Creation_InitsCreatedDateToNow()
+    {
+        // When
+        var appointment = new Appointment(DateTime.Now.AddDays(3));
+
+        // Then
+        appointment.CreatedDate.Should().Be(DateOnly.FromDateTime(DateTime.Today));
     }
 }
