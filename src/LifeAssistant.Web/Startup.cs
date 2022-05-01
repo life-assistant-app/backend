@@ -2,9 +2,9 @@
 using System.Text;
 using LifeAssistant.Core.Application.Appointments;
 using LifeAssistant.Core.Application.Users;
-using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database;
@@ -23,7 +23,7 @@ namespace LifeAssistant.Web;
 
 public class Startup
 {
-    public IConfiguration Configuration { get; }
+    private IConfiguration Configuration { get; }
 
     public Startup(IConfiguration configuration)
     {
@@ -39,7 +39,7 @@ public class Startup
         services.AddControllers(options =>
         {
             options.Filters.Add(typeof(ExceptionsFilter));
-            var policy = new AuthorizationPolicyBuilder()
+            AuthorizationPolicy policy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .Build();
             options.Filters.Add(new AuthorizeFilter(policy));
@@ -53,9 +53,9 @@ public class Startup
             options.AddConsole();
             options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
         });
-        services.AddW3CLogging(w3cLogging =>
+        services.AddW3CLogging(logging =>
         {
-            w3cLogging.LoggingFields = W3CLoggingFields.All;
+            logging.LoggingFields = W3CLoggingFields.All;
         });
     }
 
@@ -71,18 +71,19 @@ public class Startup
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped(servicesProviders =>
         {
-            var httpContext = servicesProviders
-                .GetService<IHttpContextAccessor>()
+            HttpContext httpContext = (servicesProviders
+                .GetService<IHttpContextAccessor>()  ?? throw new InvalidOperationException("Not http context accessor when configuring access control manager"))
                 .HttpContext ?? throw new InvalidOperationException("Not http context when configuring access control manager");
 
             if (!httpContext.User.Claims.Any())
             {
-                throw new InvalidOperationException();
+                throw new IllegalAccessException("The user is not authenticated");
             }
 
             Guid currentUserId = Guid.Parse(httpContext.User.Claims.First().Value);
 
-            return new AccessControlManager(currentUserId, servicesProviders.GetService<IApplicationUserRepository>());
+            IApplicationUserRepository applicationUserRepository = servicesProviders.GetService<IApplicationUserRepository>() ?? throw new InvalidOperationException("Can't get Application User Repository from DI");
+            return new AccessControlManager(currentUserId, applicationUserRepository);
         });
         
     }
