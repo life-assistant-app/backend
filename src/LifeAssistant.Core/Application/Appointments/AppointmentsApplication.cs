@@ -15,8 +15,11 @@ public class AppointmentsApplication
     private readonly IAppointmentStateFactory appointmentStateFactory;
     private readonly IAppointmentRepository appointmentRepository;
 
-    public AppointmentsApplication(IApplicationUserRepository applicationUserRepository,
-        AccessControlManager accessControlManager, IAppointmentStateFactory appointmentStateFactory, IAppointmentRepository appointmentRepository)
+    public AppointmentsApplication(
+        IApplicationUserRepository applicationUserRepository,
+        AccessControlManager accessControlManager,
+        IAppointmentStateFactory appointmentStateFactory,
+        IAppointmentRepository appointmentRepository)
     {
         this.applicationUserRepository = applicationUserRepository;
         this.accessControlManager = accessControlManager;
