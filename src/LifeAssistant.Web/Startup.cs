@@ -1,8 +1,12 @@
 ﻿using System.Reflection;
 using System.Text;
+using Hangfire;
+using Hangfire.Dashboard;
+using Hangfire.PostgreSql;
 using LifeAssistant.Core.Application.Appointments;
 using LifeAssistant.Core.Application.Users;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Persistence;
@@ -61,45 +65,58 @@ public class Startup
     private void ConfigureDi(IServiceCollection services)
     {
         services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
+        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         services.AddScoped((servicesProviders) =>
             new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
                 Configuration["JWT_SECRET"]));
         services.AddScoped<AppointmentsApplication>();
         services.AddSingleton<IAppointmentStateFactory, AppointmentStateFactory>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        services.AddScoped(servicesProviders =>
-        {
-            var httpContext = servicesProviders
-                .GetService<IHttpContextAccessor>()
-                .HttpContext ?? throw new InvalidOperationException("Not http context when configuring access control manager");
-
-            if (!httpContext.User.Claims.Any())
-            {
-                throw new InvalidOperationException();
-            }
-
-            Guid currentUserId = Guid.Parse(httpContext.User.Claims.First().Value);
-
-            return new AccessControlManager(currentUserId, servicesProviders.GetService<IApplicationUserRepository>());
-        });
+        services.AddHangfire(config =>
+            config.UsePostgreSqlStorage(GetDatabaseConnectionString()));
+        services.AddScoped(BuildAccessControlManagerForCurrentUser);
         
+    }
+
+    private static AccessControlManager BuildAccessControlManagerForCurrentUser(IServiceProvider servicesProviders)
+    {
+        var httpContext = servicesProviders
+            .GetService<IHttpContextAccessor>()
+            .HttpContext ?? throw new InvalidOperationException("Not http context when configuring access control manager");
+
+        if (!httpContext.User.Claims.Any())
+        {
+            throw new InvalidOperationException();
+        }
+
+        Guid currentUserId = Guid.Parse(httpContext.User.Claims.First().Value);
+
+        return new AccessControlManager(currentUserId, servicesProviders.GetService<IApplicationUserRepository>());
     }
 
     private void ConfigureDbContext(IServiceCollection services)
     {
         services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
-            new NpgsqlConnectionStringBuilder
-            {
-                Host = Configuration["DB_HOST"],
-                Port = int.Parse(Configuration["DB_PORT"]),
-                Username = Configuration["DB_USERNAME"],
-                Password = Configuration["DB_PASSWORD"],
-                Database = Configuration["DB_NAME"]
-            }.ToString()));
+            GetDatabaseConnectionString()));
+    }
+
+    private string GetDatabaseConnectionString()
+    {
+        return new NpgsqlConnectionStringBuilder
+        {
+            Host = Configuration["DB_HOST"],
+            Port = int.Parse(Configuration["DB_PORT"]),
+            Username = Configuration["DB_USERNAME"],
+            Password = Configuration["DB_PASSWORD"],
+            Database = Configuration["DB_NAME"]
+        }.ToString();
     }
 
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
+    public void Configure(IApplicationBuilder app,
+        IWebHostEnvironment env,
+        ApplicationDbContext context,
+        IRecurringJobManager recurringJobs)
     {
         context.Database.Migrate();
         if (env.IsDevelopment())
@@ -110,6 +127,11 @@ public class Startup
         app.UseSwagger();
         app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"); });
 
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            IsReadOnlyFunc = (_) => true
+        });
+
         app.UseW3CLogging();
         app.UseRouting();
         app.UseCors(cors =>
@@ -118,11 +140,24 @@ public class Startup
             cors.AllowAnyMethod();
             cors.AllowAnyHeader();
         });
+        
+        
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+    }
+
+    private static void ConfigureScheduledJobs(IApplicationBuilder app, IRecurringJobManager recurringJobs)
+    {
+        AppointmentsApplication appointmentsApplication = app.ApplicationServices.GetService<AppointmentsApplication>();
+
+        recurringJobs.AddOrUpdate(
+            "Appointments Cleanup Job",
+            () => appointmentsApplication.CleanupAppointments(),
+            Cron.Daily()
+        );
     }
 
 
