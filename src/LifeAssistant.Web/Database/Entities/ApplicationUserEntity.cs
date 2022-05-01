@@ -20,7 +20,7 @@ public class ApplicationUserEntity : BaseDbEntity
         this.Role = applicationUser.Role;
         this.Validated = applicationUser.Validated;
         this.Appointments = applicationUser.Appointments
-            .Select(appointment => new AppointmentEntity(appointment))
+            .Select(appointment => new AppointmentEntity(appointment,  applicationUser.Id))
             .ToList();
     }
 

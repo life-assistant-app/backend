@@ -3,6 +3,7 @@ using System.Text;
 using LifeAssistant.Core.Application.Appointments;
 using LifeAssistant.Core.Application.Users;
 using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Persistence;
@@ -65,6 +66,7 @@ public class Startup
             new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
                 Configuration["JWT_SECRET"]));
         services.AddScoped<AppointmentsApplication>();
+        services.AddScoped<IAppointmentRepository,AppointmentRepository>();
         services.AddSingleton<IAppointmentStateFactory, AppointmentStateFactory>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped(servicesProviders =>

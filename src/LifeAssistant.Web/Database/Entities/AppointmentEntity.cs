@@ -13,11 +13,12 @@ public class AppointmentEntity : BaseDbEntity
     {
     }
 
-    public AppointmentEntity(Appointment domainEntity)
+    public AppointmentEntity(Appointment domainEntity, Guid lifeAssistantId)
     {
         Id = domainEntity.Id;
         State = domainEntity.State.Name;
         DateTime = domainEntity.DateTime;
+        LifeAssistantId = lifeAssistantId;
     }
 
 

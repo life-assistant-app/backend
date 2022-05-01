@@ -205,9 +205,9 @@ public class AppointmentsApplicationTests
         DateTime dateTime3 = dateTime2.AddDays(1);
         lifeAssistant.Appointments = new List<Appointment>
         {
-            new(dateTime1),
-            new(dateTime2),
             new(dateTime3),
+            new(dateTime2),
+            new(dateTime1),
         };
 
         var fakeUserRepository = new FakeApplicationUserRepository();
