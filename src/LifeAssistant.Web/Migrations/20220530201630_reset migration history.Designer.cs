@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeAssistant.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220326210419_corrections")]
-    partial class corrections
+    [Migration("20220530201630_reset migration history")]
+    partial class resetmigrationhistory
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,7 +27,6 @@ namespace LifeAssistant.Web.Migrations
             modelBuilder.Entity("LifeAssistant.Web.Database.Entities.ApplicationUserEntity", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("FirstName")
@@ -63,17 +62,19 @@ namespace LifeAssistant.Web.Migrations
             modelBuilder.Entity("LifeAssistant.Web.Database.Entities.AppointmentEntity", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("ApplicationUserEntityId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ApplicationUserEntityId1")
-                        .HasColumnType("uuid");
+                    b.Property<DateOnly>("CreatedDate")
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("LifeAssistantId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("State")
                         .IsRequired()
@@ -83,7 +84,7 @@ namespace LifeAssistant.Web.Migrations
 
                     b.HasIndex("ApplicationUserEntityId");
 
-                    b.HasIndex("ApplicationUserEntityId1");
+                    b.HasIndex("LifeAssistantId");
 
                     b.ToTable("Appointments");
                 });
@@ -96,8 +97,9 @@ namespace LifeAssistant.Web.Migrations
 
                     b.HasOne("LifeAssistant.Web.Database.Entities.ApplicationUserEntity", null)
                         .WithMany()
-                        .HasForeignKey("ApplicationUserEntityId1")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("LifeAssistantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("LifeAssistant.Web.Database.Entities.ApplicationUserEntity", b =>

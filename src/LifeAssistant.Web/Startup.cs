@@ -93,6 +93,7 @@ public class Startup
         services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
             new NpgsqlConnectionStringBuilder
             {
+                IncludeErrorDetail = true,
                 Host = Configuration["DB_HOST"],
                 Port = int.Parse(Configuration["DB_PORT"]),
                 Username = Configuration["DB_USERNAME"],
