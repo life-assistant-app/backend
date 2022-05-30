@@ -26,6 +26,10 @@
     <ItemGroup>
         <ProjectReference Include="..\LifeAssistant.Core\LifeAssistant.Core.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations" />
+    </ItemGroup>
     <Target Name="PostClean" AfterTargets="Clean">
         <RemoveDir Directories="$(BaseIntermediateOutputPath)" /><!-- obj -->
         <RemoveDir Directories="$(BaseOutputPath)" /><!-- bin -->

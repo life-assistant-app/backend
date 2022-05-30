@@ -34,8 +34,8 @@
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FHOST/@EntryIndexedValue">localhost</s:String>
-	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FNAME/@EntryIndexedValue">lifeassistanttest</s:String>
-	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FPASSWORD/@EntryIndexedValue">mysecretpassword</s:String>
+	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FNAME/@EntryIndexedValue">lifeassistant</s:String>
+	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FPASSWORD/@EntryIndexedValue">monMdpTresSecret</s:String>
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FPORT/@EntryIndexedValue">5432</s:String>
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DB_005FUSERNAME/@EntryIndexedValue">postgres</s:String>
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=JWT_005FSECRET/@EntryIndexedValue">mylongstringtosignjwttokens</s:String></wpf:ResourceDictionary>

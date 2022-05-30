@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeAssistant.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220530201630_reset migration history")]
+    [Migration("20220530205121_reset migration history")]
     partial class resetmigrationhistory
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
