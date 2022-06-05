@@ -1,0 +1,25 @@
+﻿version: "3"
+services:
+  database:
+    image: postgres:13
+    container_name: db
+    environment:
+      - POSTGRES_PASSWORD=bonjour
+      - POSTGRES_DB=lifeassistant
+      - POSTGRES_USER=postgres
+    ports:
+      - "5432:5432"
+  backend:
+    image: ombrelin/life-assistant:latest
+    container_name: lifeassistant-backend
+    depends_on:
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=bonjour
+      - DB_NAME=lifeassistant
+      - JWT_SECRET=my-long-string-to-sign-jwt-tokens
+    ports:
+      - "80:80"
