@@ -104,23 +104,24 @@ public class ApplicationUserRepository : IApplicationUserRepository
         persistenceUserEntity.Role = domainUserEntity.Role;
         persistenceUserEntity.Validated = domainUserEntity.Validated;
         persistenceUserEntity.Appointments = domainUserEntity.Appointments
-            .Select(appointment => BuildOrUpdateAppointmentEntity(appointmentEntitiesById, appointment))
+            .Select(appointment => BuildOrUpdateAppointmentEntity(appointmentEntitiesById, appointment, domainUserEntity.Id))
             .ToList();
 
         this.context.Users.Update(persistenceUserEntity);
     }
 
     private static AppointmentEntity BuildOrUpdateAppointmentEntity(IDictionary<Guid, AppointmentEntity> appointmentEntitiesById,
-        Appointment appointment)
+        Appointment appointment, Guid lifeAssistantId)
     {
         if (!appointmentEntitiesById.ContainsKey(appointment.Id))
         {
-            return new AppointmentEntity(appointment);
+            return new AppointmentEntity(appointment, lifeAssistantId);
         }
 
         AppointmentEntity appointmentEntity = appointmentEntitiesById[appointment.Id];
         appointmentEntity.State = appointment.State.Name;
         appointmentEntity.DateTime = appointment.DateTime;
+        appointmentEntity.LifeAssistantId = lifeAssistantId;
         return appointmentEntity;
     }
 

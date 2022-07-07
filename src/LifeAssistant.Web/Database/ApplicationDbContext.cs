@@ -1,4 +1,5 @@
-﻿using LifeAssistant.Web.Database.Entities;
+﻿using LifeAssistant.Core.Domain.Entities;
+using LifeAssistant.Web.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LifeAssistant.Web.Database;
@@ -8,8 +9,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<ApplicationUserEntity> Users { get; set; }
     public DbSet<AppointmentEntity> Appointments { get; set; }
 
-    public ApplicationDbContext(DbContextOptions options) : base(options)
+    private readonly IConfiguration configuration;
+
+    public ApplicationDbContext(DbContextOptions options, IConfiguration configuration) : base(options)
     {
+        this.configuration = configuration;
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
@@ -28,6 +32,16 @@ public class ApplicationDbContext : DbContext
             .WithOne()
             .HasForeignKey(appointmentEntity => appointmentEntity.LifeAssistantId)
             .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<ApplicationUserEntity>().HasData(new ApplicationUserEntity()
+        {
+            Id = Guid.NewGuid(),
+            FirstName = "Agency",
+            LastName = "Admin",
+            Validated = true,
+            Role = ApplicationUserRole.AgencyEmployee,
+            UserName = "AgencyAdmin",
+            Password = BCrypt.Net.BCrypt.HashPassword(configuration["ADMIN_PASSWORD"]),
+        });
 
         modelBuilder.Entity<AppointmentEntity>().HasKey(appointment => appointment.Id);
         modelBuilder.Entity<AppointmentEntity>().Property(appointment => appointment.Id).ValueGeneratedNever();

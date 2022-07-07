@@ -5,9 +5,14 @@ using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using LifeAssistant.Core.Application.Appointments;
 using LifeAssistant.Core.Application.Users;
+using Guid = System.Guid;
+using HttpContext = Microsoft.AspNetCore.Http.HttpContext;
+using IHttpContextAccessor = Microsoft.AspNetCore.Http.IHttpContextAccessor;
+using InvalidOperationException = System.InvalidOperationException;
 using LifeAssistant.Core.Domain.Entities;
 using LifeAssistant.Core.Domain.Entities.Appointments;
 using LifeAssistant.Core.Domain.Entities.AppointmentState;
+using LifeAssistant.Core.Domain.Exceptions;
 using LifeAssistant.Core.Domain.Rules;
 using LifeAssistant.Core.Persistence;
 using LifeAssistant.Web.Database;
@@ -26,7 +31,7 @@ namespace LifeAssistant.Web;
 
 public class Startup
 {
-    public IConfiguration Configuration { get; }
+    private IConfiguration Configuration { get; }
 
     public Startup(IConfiguration configuration)
     {
@@ -42,7 +47,7 @@ public class Startup
         services.AddControllers(options =>
         {
             options.Filters.Add(typeof(ExceptionsFilter));
-            var policy = new AuthorizationPolicyBuilder()
+            AuthorizationPolicy policy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .Build();
             options.Filters.Add(new AuthorizeFilter(policy));
@@ -56,9 +61,9 @@ public class Startup
             options.AddConsole();
             options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
         });
-        services.AddW3CLogging(w3cLogging =>
+        services.AddW3CLogging(logging =>
         {
-            w3cLogging.LoggingFields = W3CLoggingFields.All;
+            logging.LoggingFields = W3CLoggingFields.All;
         });
     }
 
@@ -70,6 +75,7 @@ public class Startup
             new UsersApplication(servicesProviders.GetService<IApplicationUserRepository>(),
                 Configuration["JWT_SECRET"]));
         services.AddScoped<AppointmentsApplication>();
+        services.AddScoped<IAppointmentRepository,AppointmentRepository>();
         services.AddSingleton<IAppointmentStateFactory, AppointmentStateFactory>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddHangfire(config =>
@@ -80,8 +86,8 @@ public class Startup
 
     private static AccessControlManager BuildAccessControlManagerForCurrentUser(IServiceProvider servicesProviders)
     {
-        var httpContext = servicesProviders
-            .GetService<IHttpContextAccessor>()
+        HttpContext httpContext = (servicesProviders
+            .GetService<IHttpContextAccessor>()  ?? throw new InvalidOperationException("Not http context accessor when configuring access control manager"))
             .HttpContext ?? throw new InvalidOperationException("Not http context when configuring access control manager");
 
         if (!httpContext.User.Claims.Any())
@@ -91,7 +97,8 @@ public class Startup
 
         Guid currentUserId = Guid.Parse(httpContext.User.Claims.First().Value);
 
-        return new AccessControlManager(currentUserId, servicesProviders.GetService<IApplicationUserRepository>());
+        IApplicationUserRepository applicationUserRepository = servicesProviders.GetService<IApplicationUserRepository>() ?? throw new InvalidOperationException("Can't get Application User Repository from DI");
+        return new AccessControlManager(currentUserId, applicationUserRepository);
     }
 
     private void ConfigureDbContext(IServiceCollection services)
@@ -115,8 +122,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app,
         IWebHostEnvironment env,
-        ApplicationDbContext context,
-        IRecurringJobManager recurringJobs)
+        ApplicationDbContext context)
     {
         context.Database.Migrate();
         if (env.IsDevelopment())
@@ -148,18 +154,6 @@ public class Startup
         app.UseAuthorization();
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
-
-    private static void ConfigureScheduledJobs(IApplicationBuilder app, IRecurringJobManager recurringJobs)
-    {
-        AppointmentsApplication appointmentsApplication = app.ApplicationServices.GetService<AppointmentsApplication>();
-
-        recurringJobs.AddOrUpdate(
-            "Appointments Cleanup Job",
-            () => appointmentsApplication.CleanupAppointments(),
-            Cron.Daily()
-        );
-    }
-
 
     private void ConfigureSwagger(SwaggerGenOptions options)
     {
